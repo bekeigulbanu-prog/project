@@ -1,4 +1,5 @@
-# project_name
+# FinTrack
+сайт для планирования бюджета   
 ## Project members:
 Бекей Гүлбану   
 Ғайнолла Айдана
