@@ -1,5 +1,5 @@
 # FinTrack
 сайт для планирования бюджета   
 ## Project members:
-Бекей Гүлбану   
+Бекей Гүлбану Frontend  
 Ғайнолла Айдана Backend
