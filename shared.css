@@ -33,17 +33,15 @@ body {
     font-size: 16px;
 }
 
-/* Сетка для карточек */
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     gap: 25px;
 }
 
-/* Карточка участника */
 .profile-card {
-    text-decoration: none; /* Убираем стандартное подчеркивание ссылки */
-    color: inherit;        /* Сохраняем нормальный цвет текста */
+    text-decoration: none;
+    color: inherit;     
     background: #ffffff;
     padding: 25px;
     border-radius: 12px;
@@ -62,7 +60,6 @@ body {
     border-color: #2980b9;
 }
 
-/* Фото в карточке */
 .card-photo {
     width: 100px;
     height: 100px;
@@ -97,7 +94,6 @@ body {
     font-weight: bold;
 }
 
-/* Модальные окна (скрыты по умолчанию) */
 .modal {
     display: none;
     position: fixed;
