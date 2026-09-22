@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7f6;
+    background-color: #f0f2f5;
     color: #333;
     line-height: 1.6;
     padding: 40px 20px;
@@ -17,146 +17,184 @@ body {
     margin: 0 auto;
 }
 
+/* Панель вкладок сверху */
+.tabs-header {
+    display: flex;
+    background: #e2e8f0;
+    padding: 6px 6px 0 6px;
+    border-radius: 10px 10px 0 0;
+    gap: 4px;
+    overflow-x: auto;
+}
+
+/* Стили кнопок-вкладок */
+.tab-btn {
+    background: #cbd5e1;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+}
+
+.tab-btn:hover {
+    background: #94a3b8;
+    color: #0f172a;
+}
+
+/* Активная вкладка */
+.tab-btn.active {
+    background: #ffffff;
+    color: #2563eb;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Контент вкладок (по умолчанию скрыт) */
+.tab-content {
+    display: none;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.tab-content.active-content {
+    display: block;
+}
+
 .main-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 .main-header h1 {
-    font-size: 34px;
-    color: #2c3e50;
-    margin-bottom: 10px;
+    font-size: 28px;
+    color: #1e293b;
+    margin-bottom: 8px;
 }
 
 .main-header p {
-    color: #7f8c8d;
-    font-size: 16px;
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.action-btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.action-btn:hover {
+    background-color: #1d4ed8;
 }
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
 }
 
 .profile-card {
-    text-decoration: none;
-    color: inherit;     
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
     display: flex;
-    gap: 20px;
+    gap: 15px;
     align-items: center;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+    border: 2px solid #e2e8f0;
 }
 
 .profile-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    border-color: #2980b9;
+    transform: translateY(-3px);
+    border-color: #2563eb;
 }
 
 .card-photo {
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     object-fit: cover;
     border-radius: 50%;
-    border: 3px solid #2980b9;
+    border: 3px solid #2563eb;
     flex-shrink: 0;
 }
 
 .card-info h2 {
-    font-size: 20px;
-    color: #2c3e50;
-    margin-bottom: 3px;
-}
-
-.role {
-    font-size: 13px;
-    color: #2980b9;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.short-desc {
-    font-size: 13px;
-    color: #555;
-    margin-bottom: 10px;
-}
-
-.btn-text {
-    font-size: 12px;
-    color: #2980b9;
-    font-weight: bold;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.modal-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 600px;
-    position: relative;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.close-btn {
-    color: #aaa;
-    position: absolute;
-    right: 20px;
-    top: 15px;
-    font-size: 30px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close-btn:hover {
-    color: #000;
-}
-
-.modal-content h2 {
-    color: #2c3e50;
+    font-size: 18px;
+    color: #1e293b;
     margin-bottom: 2px;
 }
 
-.modal-content .subtitle {
-    color: #7f8c8d;
+.role {
+    font-size: 12px;
+    color: #2563eb;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.short-desc {
+    font-size: 12px;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.btn-text {
+    font-size: 11px;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.resume-box h2 {
+    color: #1e293b;
+    margin-bottom: 2px;
+}
+
+.resume-box .subtitle {
+    color: #64748b;
     font-size: 14px;
     margin-bottom: 10px;
 }
 
 .modal-contacts {
     font-size: 13px;
-    color: #555;
+    color: #475569;
 }
 
-.modal-content h3 {
+.resume-box h3 {
     font-size: 16px;
-    color: #2980b9;
+    color: #2563eb;
     margin-bottom: 5px;
 }
 
-.modal-content p {
+.resume-box p {
     font-size: 14px;
-    color: #444;
+    color: #334155;
+}
+
+/* Крестик закрытия динамической вкладки */
+.close-tab {
+    margin-left: 8px;
+    font-size: 14px;
+    color: #64748b;
+    padding: 0 4px;
+    border-radius: 50%;
+    line-height: 1;
+}
+
+.close-tab:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
 }
