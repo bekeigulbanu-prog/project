@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Портфолио резюме</title>
     <link rel="stylesheet" href="shared.css">
+    <style>
+        /* Стили для переключения тем внутри вкладок резюме */
+        .dark-mode {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        .dark-mode .resume-box {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+        }
+        .dark-mode .resume-box h2, 
+        .dark-mode .resume-box h3, 
+        .dark-mode .resume-box h4 {
+            color: #f8fafc !important;
+        }
+        .dark-mode .resume-box p, 
+        .dark-mode .resume-box span, 
+        .dark-mode .resume-box li {
+            color: #cbd5e1 !important;
+        }
+        .dark-mode .project-card-box {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -24,7 +50,7 @@
             </div>
         </div>
 
-        <!-- ВКЛАДКА 2: Список резюме (появляется динамически) -->
+        <!-- ВКЛАДКА 2: Список резюме -->
         <div id="tab-list" class="tab-content">
             <div class="main-header">
                 <h1>Выбор резюме</h1>
@@ -53,42 +79,96 @@
             </div>
         </div>
 
-        <!-- ВКЛАДКА 3: Резюме Гульбану (появляется динамически) -->
+        <!-- ВКЛАДКА 3: Резюме Гульбану -->
         <div id="tab-gulbanu" class="tab-content">
-            <div class="resume-box">
-                <h2>Бекей Гульбану</h2>
-                <p class="subtitle">Junior Software Engineering Student</p>
-                <div class="modal-contacts">
-                    <span>📍 Астана</span> | <span>📞 +7 (776) 173-80-59</span> | <span>✉️ bekeigulbanu@gmail.com</span>
+            <div class="resume-box" style="background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="IMG_3917.jpg" alt="Бекей Гульбану" style="width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-bottom: 15px;">
+                    <h2 style="font-size: 32px; color: #2c3e50; margin-bottom: 5px;">Бекей Гульбану</h2>
+                    <p class="subtitle" style="font-size: 18px; color: #7f8c8d; margin-bottom: 15px;">Role: Frontend Developer</p>
+                    <div class="modal-contacts" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; font-size: 14px; color: #555;">
+                        <span>📍 Астана</span> 
+                        <span>📞 +7 (776) 173-80-59</span> 
+                        <span>✉️ <a href="mailto:bekeigulbanu@gmail.com" style="color: #2980b9; text-decoration: none;">bekeigulbanu@gmail.com</a></span> 
+                        <span>💻 <a href="https://github.com/bekeigulbanu-prog" target="_blank" style="color: #2980b9; text-decoration: none;">GitHub</a></span> 
+                        <span>📱 Telegram: @flo4ka</span>
+                    </div>
                 </div>
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                <h3>О себе</h3>
-                <p>Я студентка 3 курса университета AIU по специальности: Вычислительная техника и программное обеспечение (ВТиПО). Имею опыт работы с Python, HTML, CSS, JavaScript и Java. Увлекаюсь созданием сайтов разного типа и имею проект "Mind Mirror".</p>
-                <h3 style="margin-top: 15px;">Технические навыки</h3>
-                <p><strong>Языки:</strong> Java, HTML, CSS, JavaScript, Python, SQL</p>
-                <p><strong>Инструменты:</strong> Git, GitHub, VS Code, Microsoft SQL</p>
+                <hr style="margin: 25px 0; border: 0; border-top: 2px solid #eaeaea;">
+                
+                <h3 style="font-size: 20px; color: #2c3e50; border-bottom: 2px solid #2980b9; padding-bottom: 5px; margin-bottom: 15px;">О себе</h3>
+                <p style="font-size: 15px; color: #444; line-height: 1.6;">Я студентка 3 курса университета AIU по специальности: Вычислительная техника и программное обеспечение (ВТиПО). Я имею опыт работы с Python, HTML и Java. Увлекаюсь созданием сайтов разного типа и имею проект "Mind Mirror". Ищу возможность развиваться в коммерческой разработке и учиться новым языкам программирования.</p>
+                
+                <h3 style="font-size: 20px; color: #2c3e50; border-bottom: 2px solid #2980b9; padding-bottom: 5px; margin: 30px 0 15px 0;">Технические навыки</h3>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="background: #f9fbfb; margin-bottom: 8px; padding: 10px 15px; border-left: 4px solid #2980b9; border-radius: 4px; font-size: 15px;"><strong>Языки программирования:</strong> Java, HTML, Python, SQL</li>
+                    <li style="background: #f9fbfb; margin-bottom: 8px; padding: 10px 15px; border-left: 4px solid #2980b9; border-radius: 4px; font-size: 15px;"><strong>Технологии и инструменты:</strong> Git, GitHub, VS Code, Microsoft SQL</li>
+                    <li style="background: #f9fbfb; margin-bottom: 8px; padding: 10px 15px; border-left: 4px solid #2980b9; border-radius: 4px; font-size: 15px;"><strong>Языки:</strong> Казахский, русский, английский</li>
+                </ul>
+
+                <h3 style="font-size: 20px; color: #2c3e50; border-bottom: 2px solid #2980b9; padding-bottom: 5px; margin: 30px 0 15px 0;">Проекты</h3>
+                <div class="project-card-box" style="background: #f9fbfb; padding: 20px; border-radius: 8px; border: 1px solid #e1e8ed;">
+                    <h4 style="font-size: 18px; color: #2980b9; margin-bottom: 10px;">Mind-Mirror — Зеркало твоей души</h4>
+                    <p style="font-size: 15px; color: #444; line-height: 1.6;">Разработала сайт для отслеживания психологического состояния человека. Пользователь может проходить тесты, получать советы и помощь от ИИ-помощника на основе Gemini, успокаивать нервы с помощью небольших мини-игр, а также записываться на консультацию к психологу.</p>
+                </div>
             </div>
         </div>
 
-        <!-- ВКЛАДКА 4: Резюме Айданы (появляется динамически) -->
+        <!-- ВКЛАДКА 4: Резюме Айданы -->
         <div id="tab-aidana" class="tab-content">
-            <div class="resume-box">
-                <h2>Ғайнолла Айдана</h2>
-                <p class="subtitle">Junior Software Engineering Student</p>
-                <div class="modal-contacts">
-                    <span>📍 Астана</span> | <span>📞 [Телефон]</span> | <span>✉️ [Email]</span>
+            <div class="resume-box" style="background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div class="header" style="display: flex; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 25px; gap: 25px; flex-wrap: wrap;">
+                    <img src="WhatsApp Image 2026-09-15 at 15.56.07.jpg" alt="Ғайнолла Айдананың суреті" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #4f46e5; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);">
+                    <div>
+                        <h2 style="margin: 0 0 10px 0; font-size: 28px; color: #1e293b;">Ғайнолла Айдана</h2>
+                        <p style="margin: 5px 0; color: #64748b;"><strong>Роль:</strong> Backend Developer</p>
+                        <p style="margin: 5px 0; color: #64748b;">🎓 <strong>Оқу орны:</strong> Astana International University (3-курс студенті)</p>
+                        <p style="margin: 5px 0; color: #64748b;">📧 Email: gajnollaajdana@gmail.com</p>
+                        <p style="margin: 5px 0; color: #64748b;">📱 Тел: +7 (775) 630-29-14</p>
+                    </div>
                 </div>
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                <h3>О себе</h3>
-                <p>Являюсь студентом 3 курса направления информационных систем Astana International University. Особенно интересуюсь созданием логики Server-side (Backend) и разработкой веб-приложений.</p>
-                <h3 style="margin-top: 15px;">Технические навыки</h3>
-                <p><strong>Языки:</strong> Java, HTML, CSS, JavaScript, Python, SQL</p>
-                <p><strong>Инструменты:</strong> Git, GitHub, VS Code, Microsoft SQL</p>
+
+                <div class="section" style="margin-top: 30px;">
+                    <h3 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 20px;">Туралы</h3>
+                    <p style="font-size: 15px; color: #444; line-height: 1.6;">Astana International University ақпараттык жүйелер бағытының 3-курс студентімін. Server-side (Backend) логикасын құруға және веб-қосымшаларды әзірлеуге ерекше қызығушылық танытамын.</p>
+                </div>
+
+                <div class="section" style="margin-top: 30px;">
+                    <h3 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 20px;">Негізгі жоба</h3>
+                    <ul style="padding-left: 20px; line-height: 1.6; font-size: 15px; color: #444;">
+                        <li><strong>Жоба атауы:</strong> «Служба доставки суши» (Суши жеткізу қызметі веб-платформасы)</li>
+                        <li><strong>Роль:</strong> Backend Developer</li>
+                        <li><strong>Сипаттамасы:</strong> Сайттың серверлік бөлігін, деректер қорымен байланысын және функционалдық мүмкіндіктерін әзірлеу.</li>
+                    </ul>
+                </div>
+
+                <div class="section" style="margin-top: 30px;">
+                    <h3 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 20px;">Техникалық дағдылар</h3>
+                    <ul style="padding-left: 20px; line-height: 1.6; font-size: 15px; color: #444;">
+                        <li>Backend Development & API</li>
+                        <li>Database & SQL Queries</li>
+                        <li>Git, GitHub & VS Code</li>
+                    </ul>
+                </div>
+
+                <button class="action-btn" onclick="toggleAidanaTheme()" style="margin-top: 25px; background-color: #4f46e5;">Түсін ауыстыру (Theme)</button>
             </div>
         </div>
 
     </div>
 
     <script src="shared.js"></script>
+    <script>
+        function toggleAidanaTheme() {
+            const box = document.getElementById('tab-aidana').querySelector('.resume-box');
+            box.classList.toggle('dark-mode');
+            const btn = event.target;
+            if (box.classList.contains('dark-mode')) {
+                btn.textContent = 'Күндізгі режимге өту';
+            } else {
+                btn.textContent = 'Түсін ауыстыру (Theme)';
+            }
+        }
+    </script>
 </body>
 </html>
