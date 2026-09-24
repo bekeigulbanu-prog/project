@@ -10,7 +10,6 @@ body {
     color: #333;
     line-height: 1.6;
     padding: 40px 20px;
-    /* Убираем любые фиксированные высоты, чтобы скроллился весь документ браузера */
 }
 
 .main-container {
@@ -18,6 +17,7 @@ body {
     margin: 0 auto;
 }
 
+/* Панель вкладок сверху */
 .tabs-header {
     display: flex;
     background: #e2e8f0;
@@ -27,6 +27,7 @@ body {
     overflow-x: auto;
 }
 
+/* Стили кнопок-вкладок */
 .tab-btn {
     background: #cbd5e1;
     border: none;
@@ -36,7 +37,7 @@ body {
     color: #475569;
     cursor: pointer;
     border-radius: 8px 8px 0 0;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
     white-space: nowrap;
     display: flex;
     align-items: center;
@@ -47,12 +48,14 @@ body {
     color: #0f172a;
 }
 
+/* Активная вкладка */
 .tab-btn.active {
     background: #ffffff;
     color: #2563eb;
     box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
 }
 
+/* Контент вкладок (по умолчанию скрыт) */
 .tab-content {
     display: none;
     background: #ffffff;
@@ -63,22 +66,6 @@ body {
 
 .tab-content.active-content {
     display: block;
-}
-
-/* Настройки для iframe, чтобы они подстраивались под контент без внутреннего скролла */
-.tab-content.iframe-tab {
-    padding: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
-
-.resume-iframe {
-    width: 100%;
-    height: 1050px;
-    border: none;
-    border-radius: 0 0 10px 10px;
-    display: block;
-    overflow: hidden; /* полностью гасит внутренний скролл */
 }
 
 .main-header {
@@ -170,6 +157,71 @@ body {
     font-weight: bold;
 }
 
+/* Стили для практических заданий */
+.task-box {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.task-box h3 {
+    color: #2563eb;
+    margin-bottom: 12px;
+}
+
+.task-btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 8px;
+    margin-top: 8px;
+    transition: background 0.2s;
+}
+
+.task-btn:hover {
+    background-color: #1d4ed8;
+}
+
+.old-element {
+    background-color: #fee2e2;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 10px 0;
+    color: #991b1b;
+}
+
+/* Новый элемент теперь идет вниз на всю ширину вкладки */
+.new-div {
+    background-color: #d1fae5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    color: #065f46;
+    font-weight: bold;
+    width: 100%;
+}
+
+.interactive-p {
+    cursor: pointer;
+    padding: 10px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    transition: all 0.2s;
+    margin-top: 10px;
+}
+
+.active {
+    border: 2px dashed #f59e0b;
+    background-color: #fef3c7 !important;
+}
+
+/* Крестик закрытия динамической вкладки */
 .close-tab {
     margin-left: 8px;
     font-size: 14px;

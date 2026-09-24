@@ -3,40 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Портфолио резюме</title>
+    <title>Портфолио резюме и заданий</title>
     <link rel="stylesheet" href="shared.css">
-    <style>
-        /* Стили для переключения тем внутри вкладок резюме */
-        .dark-mode {
-            background-color: #0f172a !important;
-            color: #f8fafc !important;
-        }
-        .dark-mode .resume-box {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-            border-color: #334155 !important;
-        }
-        .dark-mode .resume-box h2, 
-        .dark-mode .resume-box h3, 
-        .dark-mode .resume-box h4 {
-            color: #f8fafc !important;
-        }
-        .dark-mode .resume-box p, 
-        .dark-mode .resume-box span, 
-        .dark-mode .resume-box li {
-            color: #cbd5e1 !important;
-        }
-        .dark-mode .project-card-box {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-        }
-    </style>
 </head>
 <body>
 
     <div class="main-container">
         
-        <!-- Панель вкладок: изначально только Главная -->
+        <!-- Панель вкладок -->
         <div class="tabs-header" id="tabsHeader">
             <button class="tab-btn active" id="btn-main" onclick="openTab('tab-main', 'btn-main')">Главная страница</button>
         </div>
@@ -45,8 +19,12 @@
         <div id="tab-main" class="tab-content active-content">
             <div class="main-header">
                 <h1>Добро пожаловать в наше портфолио!</h1>
-                <p>Студентки специальности ВТиПО (AIU). Здесь собраны наши резюме и проекты.</p>
+                <p>Студентки специальности ВТиПО (AIU). Здесь собраны наши резюме и практические задания.</p>
                 <button class="action-btn" onclick="showListTab()">Перейти к списку резюме ➔</button>
+                <div style="margin-top: 15px;">
+                    <button class="action-btn" onclick="showTaskTab('task1', 'Задание 1')">Открыть Задание 1 ➔</button>
+                    <button class="action-btn" onclick="showTaskTab('task2', 'Задание 2')">Открыть Задание 2 ➔</button>
+                </div>
             </div>
         </div>
 
@@ -54,7 +32,7 @@
         <div id="tab-list" class="tab-content">
             <div class="main-header">
                 <h1>Выбор резюме</h1>
-                <p>Нажмите на карточку ниже, чтобы открыть резюме в отдельной вкладке.</p>
+                <p>Нажмите на карточку ниже, чтобы открыть резюме.</p>
             </div>
             <div class="cards-grid">
                 <div class="profile-card" onclick="showResume('gulbanu')">
@@ -62,7 +40,7 @@
                     <div class="card-info">
                         <h2>Бекей Гульбану</h2>
                         <p class="role">Junior Software Engineering Student</p>
-                        <p class="short-desc">Увлекаюсь разработкой сайтов, создала проект "Mind-Mirror". Знаю Java, Python, HTML/CSS, JS.</p>
+                        <p class="short-desc">Frontend Developer, создала проект "Mind-Mirror".</p>
                         <span class="btn-text">Открыть резюме ➔</span>
                     </div>
                 </div>
@@ -72,14 +50,14 @@
                     <div class="card-info">
                         <h2>Ғайнолла Айдана</h2>
                         <p class="role">Junior Software Engineering Student</p>
-                        <p class="short-desc">Студентка 3 курса ВТиПО. Специализируюсь на базах данных и фронтенд-разработке.</p>
+                        <p class="short-desc">Backend Developer, работа с базами данных.</p>
                         <span class="btn-text">Открыть резюме ➔</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ВКЛАДКА 3: Резюме Гульбану -->
+        <!-- ВКЛАДКА: Резюме Гульбану -->
         <div id="tab-gulbanu" class="tab-content">
             <div class="resume-box" style="background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 <div style="text-align: center; margin-bottom: 20px;">
@@ -89,86 +67,82 @@
                     <div class="modal-contacts" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; font-size: 14px; color: #555;">
                         <span>📍 Астана</span> 
                         <span>📞 +7 (776) 173-80-59</span> 
-                        <span>✉️ <a href="mailto:bekeigulbanu@gmail.com" style="color: #2980b9; text-decoration: none;">bekeigulbanu@gmail.com</a></span> 
-                        <span>💻 <a href="https://github.com/bekeigulbanu-prog" target="_blank" style="color: #2980b9; text-decoration: none;">GitHub</a></span> 
-                        <span>📱 Telegram: @flo4ka</span>
+                        <span>✉️ bekeigulbanu@gmail.com</span> 
+                        <span>💻 GitHub</span> 
                     </div>
                 </div>
                 <hr style="margin: 25px 0; border: 0; border-top: 2px solid #eaeaea;">
-                
-                <h3 style="font-size: 20px; color: #2c3e50; border-bottom: 2px solid #2980b9; padding-bottom: 5px; margin-bottom: 15px;">О себе</h3>
-                <p style="font-size: 15px; color: #444; line-height: 1.6;">Я студентка 3 курса университета AIU по специальности: Вычислительная техника и программное обеспечение (ВТиПО). Я имею опыт работы с Python, HTML и Java. Увлекаюсь созданием сайтов разного типа и имею проект "Mind Mirror". Ищу возможность развиваться в коммерческой разработке и учиться новым языкам программирования.</p>
-                
-                <h3 style="font-size: 20px; color: #2c3e50; border-bottom: 2px solid #2980b9; padding-bottom: 5px; margin: 30px 0 15px 0;">Технические навыки</h3>
-                <ul style="list-style-type: none; padding: 0;">
-                    <li style="background: #f9fbfb; margin-bottom: 8px; padding: 10px 15px; border-left: 4px solid #2980b9; border-radius: 4px; font-size: 15px;"><strong>Языки программирования:</strong> Java, HTML, Python, SQL</li>
-                    <li style="background: #f9fbfb; margin-bottom: 8px; padding: 10px 15px; border-left: 4px solid #2980b9; border-radius: 4px; font-size: 15px;"><strong>Технологии и инструменты:</strong> Git, GitHub, VS Code, Microsoft SQL</li>
-                    <li style="background: #f9fbfb; margin-bottom: 8px; padding: 10px 15px; border-left: 4px solid #2980b9; border-radius: 4px; font-size: 15px;"><strong>Языки:</strong> Казахский, русский, английский</li>
-                </ul>
+                <h3 style="font-size: 20px; color: #2c3e50;">О себе</h3>
+                <p>Я студентка 3 курса университета AIU по специальности ВТиПО. Увлекаюсь веб-разработкой, создала проект "Mind Mirror".</p>
+            </div>
+        </div>
 
-                <h3 style="font-size: 20px; color: #2c3e50; border-bottom: 2px solid #2980b9; padding-bottom: 5px; margin: 30px 0 15px 0;">Проекты</h3>
-                <div class="project-card-box" style="background: #f9fbfb; padding: 20px; border-radius: 8px; border: 1px solid #e1e8ed;">
-                    <h4 style="font-size: 18px; color: #2980b9; margin-bottom: 10px;">Mind-Mirror — Зеркало твоей души</h4>
-                    <p style="font-size: 15px; color: #444; line-height: 1.6;">Разработала сайт для отслеживания психологического состояния человека. Пользователь может проходить тесты, получать советы и помощь от ИИ-помощника на основе Gemini, успокаивать нервы с помощью небольших мини-игр, а также записываться на консультацию к психологу.</p>
+        <!-- ВКЛАДКА: Резюме Айданы -->
+        <div id="tab-aidana" class="tab-content">
+            <div class="resume-box" style="background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 25px; gap: 25px; flex-wrap: wrap;">
+                    <img src="WhatsApp Image 2026-09-15 at 15.56.07.jpg" alt="Айдана" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #4f46e5;">
+                    <div>
+                        <h2 style="margin: 0 0 10px 0; font-size: 28px; color: #1e293b;">Ғайнолла Айдана</h2>
+                        <p style="margin: 5px 0; color: #64748b;"><strong>Роль:</strong> Backend Developer</p>
+                        <p style="margin: 5px 0; color: #64748b;">🎓 Astana International University (3-курс)</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <h3 style="color: #4f46e5;">Туралы</h3>
+                    <p>Astana International University ақпараттык жүйелер бағытының 3-курс студентімін. Backend бағытына қызығушылық танытамын.</p>
                 </div>
             </div>
         </div>
 
-        <!-- ВКЛАДКА 4: Резюме Айданы -->
-        <div id="tab-aidana" class="tab-content">
-            <div class="resume-box" style="background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <div class="header" style="display: flex; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 25px; gap: 25px; flex-wrap: wrap;">
-                    <img src="WhatsApp Image 2026-09-15 at 15.56.07.jpg" alt="Ғайнолла Айдананың суреті" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #4f46e5; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);">
-                    <div>
-                        <h2 style="margin: 0 0 10px 0; font-size: 28px; color: #1e293b;">Ғайнолла Айдана</h2>
-                        <p style="margin: 5px 0; color: #64748b;"><strong>Роль:</strong> Backend Developer</p>
-                        <p style="margin: 5px 0; color: #64748b;">🎓 <strong>Оқу орны:</strong> Astana International University (3-курс студенті)</p>
-                        <p style="margin: 5px 0; color: #64748b;">📧 Email: gajnollaajdana@gmail.com</p>
-                        <p style="margin: 5px 0; color: #64748b;">📱 Тел: +7 (775) 630-29-14</p>
-                    </div>
-                </div>
+        <!-- ВКЛАДКА ЗАДАНИЕ 1 -->
+        <div id="tab-task1" class="tab-content">
+            <div class="main-header">
+                <h1>Задание 1: DOM манипуляции</h1>
+            </div>
+            
+            <div class="task-box">
+                <h3 id="target-title">Исходный текст заголовка по ID</h3>
+                <button class="task-btn" onclick="changeTextWithToggle()">Изменить текст (с возвратом)</button>
+            </div>
 
-                <div class="section" style="margin-top: 30px;">
-                    <h3 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 20px;">Туралы</h3>
-                    <p style="font-size: 15px; color: #444; line-height: 1.6;">Astana International University ақпараттык жүйелер бағытының 3-курс студентімін. Server-side (Backend) логикасын құруға және веб-қосымшаларды әзірлеуге ерекше қызығушылық танытамын.</p>
+            <div class="task-box">
+                <div class="old-element" id="element-to-delete">
+                    Элемент с классом old-element (будет удален)
                 </div>
+                <button class="task-btn" onclick="deleteOldElement()">Удалить old-element</button>
+            </div>
 
-                <div class="section" style="margin-top: 30px;">
-                    <h3 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 20px;">Негізгі жоба</h3>
-                    <ul style="padding-left: 20px; line-height: 1.6; font-size: 15px; color: #444;">
-                        <li><strong>Жоба атауы:</strong> «Служба доставки суши» (Суши жеткізу қызметі веб-платформасы)</li>
-                        <li><strong>Роль:</strong> Backend Developer</li>
-                        <li><strong>Сипаттамасы:</strong> Сайттың серверлік бөлігін, деректер қорымен байланысын және функционалдық мүмкіндіктерін әзірлеу.</li>
-                    </ul>
-                </div>
+            <div class="task-box">
+                <h3>Создание нового элемента</h3>
+                <button class="task-btn" onclick="createNewDiv()">Надпись новый элемент (Добавить)</button>
+            </div>
 
-                <div class="section" style="margin-top: 30px;">
-                    <h3 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 20px;">Техникалық дағдылар</h3>
-                    <ul style="padding-left: 20px; line-height: 1.6; font-size: 15px; color: #444;">
-                        <li>Backend Development & API</li>
-                        <li>Database & SQL Queries</li>
-                        <li>Git, GitHub & VS Code</li>
-                    </ul>
-                </div>
+            <div class="task-box">
+                <h3>Интерактивный абзац</h3>
+                <p class="interactive-p" id="interactiveParagraph" onclick="toggleParagraphStyle()">
+                    Это интерактивный абзац («Бұл ауыспалы абзац»). Нажми на меня!
+                </p>
+            </div>
+        </div>
 
-                <button class="action-btn" onclick="toggleAidanaTheme()" style="margin-top: 25px; background-color: #4f46e5;">Түсін ауыстыру (Theme)</button>
+        <!-- ВКЛАДКА ЗАДАНИЕ 2 -->
+        <div id="tab-task2" class="tab-content">
+            <div class="main-header">
+                <h1>Задание 2: Управление классами</h1>
+            </div>
+
+            <div class="task-box">
+                <h3 id="class-target-element" class="my-custom-class">Целевой элемент для классов</h3>
+                <button class="task-btn" onclick="toggleElementClass()">Переключить класс active (toggle)</button>
+                
+                <p style="margin-top: 15px;"><strong>Список классов элемента:</strong></p>
+                <p id="classes-output" style="background: #f8fafc; padding: 10px; border-radius: 6px; font-family: monospace;"></p>
             </div>
         </div>
 
     </div>
 
     <script src="shared.js"></script>
-    <script>
-        function toggleAidanaTheme() {
-            const box = document.getElementById('tab-aidana').querySelector('.resume-box');
-            box.classList.toggle('dark-mode');
-            const btn = event.target;
-            if (box.classList.contains('dark-mode')) {
-                btn.textContent = 'Күндізгі режимге өту';
-            } else {
-                btn.textContent = 'Түсін ауыстыру (Theme)';
-            }
-        }
-    </script>
 </body>
 </html>
