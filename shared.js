@@ -1,4 +1,3 @@
-// Базовая функция переключения активной вкладки
 function openTab(tabName, btnId) {
     const tabContents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < tabContents.length; i++) {
@@ -14,7 +13,6 @@ function openTab(tabName, btnId) {
     document.getElementById(btnId).classList.add("active");
 }
 
-// Динамическое создание и открытие вкладки "Список резюме"
 function showListTab() {
     let tabId = 'tab-list';
     let btnId = 'btn-list';
@@ -39,7 +37,6 @@ function showListTab() {
     openTab(tabId, btnId);
 }
 
-// Закрытие вкладки "Список резюме"
 function closeListTab(event) {
     event.stopPropagation();
     
@@ -52,7 +49,6 @@ function closeListTab(event) {
     openTab('tab-main', 'btn-main');
 }
 
-// Динамическое создание и открытие вкладки конкретного резюме
 function showResume(person) {
     let tabId = 'tab-' + person;
     let btnId = 'btn-' + person;
@@ -78,7 +74,6 @@ function showResume(person) {
     openTab(tabId, btnId);
 }
 
-// Закрытие вкладки резюме
 function closeResumeTab(event, tabId, btnId) {
     event.stopPropagation();
     
@@ -95,7 +90,6 @@ function closeResumeTab(event, tabId, btnId) {
     }
 }
 
-// Открытие вкладок заданий
 function showTaskTab(taskId, taskName) {
     let tabId = 'tab-' + taskId;
     let btnId = 'btn-' + taskId;
@@ -117,9 +111,6 @@ function showTaskTab(taskId, taskName) {
     openTab(tabId, btnId);
 }
 
-// --- ЛОГИКА ЗАДАНИЙ ---
-
-// Изменение текста с возможностью возврата (Задание 1)
 let isTextChanged = false;
 function changeTextWithToggle() {
     const title = document.getElementById('target-title');
@@ -132,7 +123,6 @@ function changeTextWithToggle() {
     }
 }
 
-// Удаление старого элемента (Задание 1)
 function deleteOldElement() {
     const el = document.getElementById('element-to-delete');
     if (el) {
@@ -143,7 +133,6 @@ function deleteOldElement() {
     }
 }
 
-// Создание нового элемента в самом низу вкладки Задания 1 (Исправлено)
 function createNewDiv() {
     const taskTab = document.getElementById('tab-task1');
     if (!document.getElementById('unique-new-div')) {
@@ -157,7 +146,6 @@ function createNewDiv() {
     }
 }
 
-// Интерактивный абзац с возвратом в исходное состояние (Задание 1)
 let isParagraphModified = false;
 function toggleParagraphStyle() {
     const p = document.getElementById('interactiveParagraph');
@@ -174,14 +162,12 @@ function toggleParagraphStyle() {
     }
 }
 
-// Управление классами через classList.toggle (Задание 2)
 function toggleElementClass() {
     const el = document.getElementById('class-target-element');
     el.classList.toggle('active');
     showClassesInfo();
 }
 
-// Вывод списка классов в консоль и на тег <p> (Задание 2)
 function showClassesInfo() {
     const el = document.getElementById('class-target-element');
     const classListString = el.classList.value;
