@@ -134,13 +134,13 @@ function deleteOldElement() {
 }
 
 function createNewDiv() {
-    const taskTab = document.getElementById('tab-task1');
     if (!document.getElementById('unique-new-div')) {
         const newDiv = document.createElement('div');
         newDiv.className = 'new-div';
         newDiv.id = 'unique-new-div';
         newDiv.textContent = 'Я новый элемент';
-        taskTab.appendChild(newDiv);
+        
+        document.body.appendChild(newDiv);
     } else {
         alert('Новый элемент уже добавлен!');
     }
