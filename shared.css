@@ -295,62 +295,30 @@ body {
 
 
 body.global-dark-mode {
-    background-color: #0f172a !important;
-    color: #f8fafc !important;
+    background-color: #0f172a;
+    color: #f8fafc;
 }
 
-body.global-dark-mode .main-container {
-    color: #f8fafc !important;
-}
 
-body.global-dark-mode .tab-content,
-body.global-dark-mode .task-box,
-body.global-dark-mode .profile-card,
-body.global-dark-mode .resume-box {
+body.global-dark-mode :is(.tab-content, .task-box, .profile-card, .resume-box) {
     background-color: #1e293b !important;
     color: #f8fafc !important;
     border-color: #334155 !important;
 }
 
-body.global-dark-mode h1,
-body.global-dark-mode h2,
-body.global-dark-mode h3,
-body.global-dark-mode .main-header h1 {
-    color: #f8fafc !important;
-}
 
-body.global-dark-mode p,
-body.global-dark-mode .main-header p,
-body.global-dark-mode .short-desc {
-    color: #94a3b8 !important;
-}
+body.global-dark-mode :is(h1, h2, h3) { color: #f8fafc !important; }
+body.global-dark-mode p               { color: #94a3b8 !important; }
 
-body.global-dark-mode .tabs-header {
-    background: #1e293b !important;
-}
 
-body.global-dark-mode .tab-btn {
-    background: #334155 !important;
-    color: #94a3b8 !important;
-}
+body.global-dark-mode .tabs-header    { background: #1e293b; }
+body.global-dark-mode .tab-btn        { background: #334155; color: #94a3b8; }
+body.global-dark-mode .tab-btn.active { background: #1e293b; color: #60a5fa; }
 
-body.global-dark-mode .tab-btn.active {
-    background: #1e293b !important;
-    color: #60a5fa !important;
-}
 
-body.global-dark-mode .task-input {
+body.global-dark-mode :is(.task-input, .interactive-p, #classes-output, .count-output) {
     background-color: #0f172a !important;
-    color: #f8fafc !important;
-    border-color: #334155 !important;
+    color: #f8fafc;
+    border-color: #334155;
 }
-
-body.global-dark-mode .interactive-p,
-body.global-dark-mode #classes-output,
-body.global-dark-mode .count-output {
-    background-color: #0f172a !important;
-}
-
-body.global-dark-mode #tableContainer td {
-    border-color: #475569;
-}
+body.global-dark-mode #tableContainer td { border-color: #475569; }
