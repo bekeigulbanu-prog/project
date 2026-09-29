@@ -176,6 +176,7 @@ function showClassesInfo() {
     document.getElementById('classes-output').textContent = classListString ? classListString : 'У элемента нет классов';
 }
 
+<<<<<<< HEAD
 /* ===================== ЗАДАНИЕ 3 ===================== */
 
 function generateTable() {
@@ -193,6 +194,33 @@ function generateTable() {
 function paintCell(td) {
     td.classList.toggle('green');
     updateCount();
+=======
+function generateTable() {
+    const rows = +document.getElementById('rowsInput').value;
+    const cols = +document.getElementById('colsInput').value;
+    const container = document.getElementById('tableContainer');
+
+    container.innerHTML = '';
+    document.getElementById('countOutput').textContent = '';
+
+    if (rows < 1 || cols < 1) return alert('Введите корректные размеры!');
+
+    const row = '<tr>' + '<td></td>'.repeat(cols) + '</tr>';
+    container.innerHTML = '<table>' + row.repeat(rows) + '</table>';
+}
+
+// Один обработчик на весь контейнер вместо onclick у каждой ячейки
+document.getElementById('tableContainer').addEventListener('click', e => {
+    if (e.target.tagName === 'TD') e.target.classList.toggle('green');
+});
+
+function countColoredCells() {
+    if (!document.querySelector('#tableContainer table'))
+        return alert('Сначала создайте таблицу!');
+
+    const count = document.querySelectorAll('#tableContainer td.green').length;
+    document.getElementById('countOutput').textContent = `Количество зеленых ячеек: ${count}`;
+>>>>>>> 737f43f57323a697beb202eb3954690d39708c21
 }
 
 function updateCount() {
