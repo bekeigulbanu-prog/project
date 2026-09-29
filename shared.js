@@ -218,3 +218,17 @@ function countColoredCells() {
         `Количество зеленых ячеек: ${count}`;
 }
 
+// Бүкіл бетті қараңғы/жарық режимге ауыстыратын функция
+function toggleGlobalTheme() {
+    const body = document.body;
+    body.classList.toggle('global-dark-mode');
+    
+    const btn = document.getElementById('globalThemeBtn');
+    if (body.classList.contains('global-dark-mode')) {
+        btn.textContent = '☀️ Выключить темную тему';
+        btn.style.backgroundColor = '#f59e0b';
+    } else {
+        btn.textContent = '🌙 Включить темную тему';
+        btn.style.backgroundColor = '#2563eb';
+    }
+}
