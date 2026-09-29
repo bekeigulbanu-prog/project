@@ -143,31 +143,26 @@
             </div>
         </div>
 
-        <!-- ЗАДАНИЕ 3 -->
         <div id="tab-task3" class="tab-content">
-            <div class="main-header">
-                <h1>Задание 3: Генератор таблицы и цвета</h1>
-            </div>
+    <div class="main-header">
+        <h1>Задание 3: Генератор таблицы и цвета</h1>
+    </div>
 
-            <div class="task-box">
-                <h3 style="margin-bottom: 12px;">Создать таблицу</h3>
+    <div class="task-box">
+        <h3>Создать таблицу</h3>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 15px;">
-                    <input type="number" id="rowsInput" class="task-input" placeholder="Количество строк" min="1" style="flex: 1; min-width: 140px; width: auto;">
-                    <input type="number" id="colsInput" class="task-input" placeholder="Количество столбцов" min="1" style="flex: 1; min-width: 140px; width: auto;">
-                    <button class="task-btn" onclick="generateTable()" style="margin: 0; padding: 10px 20px;">Сгенерировать</button>
-                </div>
-
-                <div class="table-container-wrapper">
-                    <div id="tableContainer"></div>
-                </div>
-
-                <div style="margin-top: 20px;">
-                    <button class="task-btn" onclick="countColoredCells()">Посчитать зеленые ячейки</button>
-                    <p id="countOutput" class="count-output"></p>
-                </div>
-            </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+            <input type="number" id="rowsInput" class="task-input" placeholder="Количество строк" min="1" oninput="generateTable()" style="flex: 1; min-width: 140px; width: auto;">
+            <input type="number" id="colsInput" class="task-input" placeholder="Количество столбцов" min="1" oninput="generateTable()" style="flex: 1; min-width: 140px; width: auto;">
         </div>
+
+        <div class="table-container-wrapper">
+            <div id="tableContainer"></div>
+        </div>
+
+        <p id="countOutput" class="count-output">Количество зеленых ячеек: 0</p>
+    </div>
+</div>
 
 <!-- ЗАДАНИЕ 4 -->
         <div id="tab-task4" class="tab-content">
