@@ -176,46 +176,31 @@ function showClassesInfo() {
     document.getElementById('classes-output').textContent = classListString ? classListString : 'У элемента нет классов';
 }
 
-const GREEN = 'rgb(209, 250, 229)';
-
 function generateTable() {
-    const rows = parseInt(document.getElementById('rowsInput').value, 10);
-    const cols = parseInt(document.getElementById('colsInput').value, 10);
+    const rows = +document.getElementById('rowsInput').value;
+    const cols = +document.getElementById('colsInput').value;
     const container = document.getElementById('tableContainer');
+
     container.innerHTML = '';
-
-    if (!rows || !cols || rows <= 0 || cols <= 0) {
-        alert('Введите корректные размеры!');
-        return;
-    }
-
-    const table = document.createElement('table');
-    for (let i = 0; i < rows; i++) {
-        const tr = document.createElement('tr');
-        for (let j = 0; j < cols; j++) {
-            const td = document.createElement('td');
-            td.onclick = function () {
-                this.style.backgroundColor =
-                    this.style.backgroundColor === GREEN ? '' : '#d1fae5';
-            };
-            tr.appendChild(td);
-        }
-        table.appendChild(tr);
-    }
-    container.appendChild(table);
     document.getElementById('countOutput').textContent = '';
+
+    if (rows < 1 || cols < 1) return alert('Введите корректные размеры!');
+
+    const row = '<tr>' + '<td></td>'.repeat(cols) + '</tr>';
+    container.innerHTML = '<table>' + row.repeat(rows) + '</table>';
 }
 
-function countColoredCells() {
-    const table = document.querySelector('#tableContainer table');
-    if (!table) return alert('Сначала создайте таблицу!');
+// Один обработчик на весь контейнер вместо onclick у каждой ячейки
+document.getElementById('tableContainer').addEventListener('click', e => {
+    if (e.target.tagName === 'TD') e.target.classList.toggle('green');
+});
 
-    let count = 0;
-    table.querySelectorAll('td').forEach(td => {
-        if (td.style.backgroundColor === GREEN) count++;
-    });
-    document.getElementById('countOutput').textContent =
-        `Количество зеленых ячеек: ${count}`;
+function countColoredCells() {
+    if (!document.querySelector('#tableContainer table'))
+        return alert('Сначала создайте таблицу!');
+
+    const count = document.querySelectorAll('#tableContainer td.green').length;
+    document.getElementById('countOutput').textContent = `Количество зеленых ячеек: ${count}`;
 }
 
 // Бүкіл бетті қараңғы/жарық режимге ауыстыратын функция

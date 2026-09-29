@@ -279,6 +279,10 @@ body {
     background-color: #eff6ff;
 }
 
+#tableContainer td.green {
+    background-color: #d1fae5;
+}
+
 .count-output {
     background: #f8fafc;
     padding: 10px;
