@@ -176,48 +176,45 @@ function showClassesInfo() {
     document.getElementById('classes-output').textContent = classListString ? classListString : 'У элемента нет классов';
 }
 
+const GREEN = 'rgb(209, 250, 229)';
+
 function generateTable() {
-    let rows = document.getElementById('rowsInput').value;
-    let cols = document.getElementById('colsInput').value;
-    let container = document.getElementById('tableContainer');
+    const rows = parseInt(document.getElementById('rowsInput').value, 10);
+    const cols = parseInt(document.getElementById('colsInput').value, 10);
+    const container = document.getElementById('tableContainer');
+    container.innerHTML = '';
 
-    container.innerHTML = '<table class="dynamic-table" id="myTable"></table>';
-    let table = document.getElementById('myTable');
+    if (!rows || !cols || rows <= 0 || cols <= 0) {
+        alert('Введите корректные размеры!');
+        return;
+    }
 
+    const table = document.createElement('table');
     for (let i = 0; i < rows; i++) {
-        let tr = document.createElement('tr');
+        const tr = document.createElement('tr');
         for (let j = 0; j < cols; j++) {
-            let td = document.createElement('td');
-            
-            td.onclick = function() {
-                this.classList.toggle('color-state-1');
+            const td = document.createElement('td');
+            td.onclick = function () {
+                this.style.backgroundColor =
+                    this.style.backgroundColor === GREEN ? '' : '#d1fae5';
             };
-            
             tr.appendChild(td);
         }
         table.appendChild(tr);
     }
-    
-    document.getElementById('colorCounterBox').style.display = 'block';
+    container.appendChild(table);
+    document.getElementById('countOutput').textContent = '';
 }
 
 function countColoredCells() {
-    let count = document.querySelectorAll('.dynamic-table td.color-state-1').length;
-    document.getElementById('counterOutput').textContent = 'Зеленых ячеек: ' + count;
+    const table = document.querySelector('#tableContainer table');
+    if (!table) return alert('Сначала создайте таблицу!');
+
+    let count = 0;
+    table.querySelectorAll('td').forEach(td => {
+        if (td.style.backgroundColor === GREEN) count++;
+    });
+    document.getElementById('countOutput').textContent =
+        `Количество зеленых ячеек: ${count}`;
 }
 
-
-// Бүкіл бетті қараңғы/жарық режимге ауыстыратын функция
-function toggleGlobalTheme() {
-    const body = document.body;
-    body.classList.toggle('global-dark-mode');
-    
-    const btn = document.getElementById('globalThemeBtn');
-    if (body.classList.contains('global-dark-mode')) {
-        btn.textContent = '☀️ Выключить темную тему';
-        btn.style.backgroundColor = '#f59e0b';
-    } else {
-        btn.textContent = '🌙 Включить темную тему';
-        btn.style.backgroundColor = '#2563eb';
-    }
-}

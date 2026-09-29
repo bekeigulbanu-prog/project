@@ -9,7 +9,7 @@
 <body>
 
     <div class="main-container">
-        
+
         <!-- Панель вкладок -->
         <div class="tabs-header" id="tabsHeader">
             <button class="tab-btn active" id="btn-main" onclick="openTab('tab-main', 'btn-main')">Главная страница</button>
@@ -59,6 +59,7 @@
             </div>
         </div>
 
+        <!-- Резюме: Гульбану -->
         <div id="tab-gulbanu" class="tab-content">
             <div class="resume-box" style="background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 <div style="text-align: center; margin-bottom: 20px;">
@@ -66,11 +67,11 @@
                     <h2 style="font-size: 32px; color: #2c3e50; margin-bottom: 5px;">Бекей Гульбану</h2>
                     <p class="subtitle" style="font-size: 18px; color: #7f8c8d; margin-bottom: 15px;">Role: Frontend Developer</p>
                     <div class="modal-contacts" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; font-size: 14px; color: #555;">
-                        <span>📍 Астана</span> 
-                        <span>📞 +7 (776) 173-80-59</span> 
-                        <span>✉️ bekeigulbanu@gmail.com</span> 
-                        <span>💻 GitHub</span> 
-                    </div> 
+                        <span>📍 Астана</span>
+                        <span>📞 +7 (776) 173-80-59</span>
+                        <span>✉️ bekeigulbanu@gmail.com</span>
+                        <span>💻 GitHub</span>
+                    </div>
                 </div>
                 <hr style="margin: 25px 0; border: 0; border-top: 2px solid #eaeaea;">
                 <h3 style="font-size: 20px; color: #2c3e50;">О себе</h3>
@@ -78,6 +79,7 @@
             </div>
         </div>
 
+        <!-- Резюме: Айдана -->
         <div id="tab-aidana" class="tab-content">
             <div class="resume-box" style="background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 25px; gap: 25px; flex-wrap: wrap;">
@@ -95,11 +97,12 @@
             </div>
         </div>
 
+        <!-- ЗАДАНИЕ 1 -->
         <div id="tab-task1" class="tab-content">
             <div class="main-header">
                 <h1>Задание 1: DOM манипуляции</h1>
             </div>
-            
+
             <div class="task-box">
                 <h3 id="target-title">Исходный текст заголовка по ID</h3>
                 <button class="task-btn" onclick="changeTextWithToggle()">Изменить текст (с возвратом)</button>
@@ -125,6 +128,7 @@
             </div>
         </div>
 
+        <!-- ЗАДАНИЕ 2 -->
         <div id="tab-task2" class="tab-content">
             <div class="main-header">
                 <h1>Задание 2: Управление классами</h1>
@@ -133,48 +137,41 @@
             <div class="task-box">
                 <h3 id="class-target-element" class="my-custom-class">Целевой элемент для классов</h3>
                 <button class="task-btn" onclick="toggleElementClass()">Переключить класс active (toggle)</button>
-                
+
                 <p style="margin-top: 15px;"><strong>Список классов элемента:</strong></p>
                 <p id="classes-output" style="background: #f8fafc; padding: 10px; border-radius: 6px; font-family: monospace;"></p>
             </div>
         </div>
 
-    </div>
-    <div id="tab-task3" class="tab-content">
+        <!-- ЗАДАНИЕ 3 -->
+        <div id="tab-task3" class="tab-content">
             <div class="main-header">
-                <h1>Задание 3: Таблица</h1>
-            </div>
-            <div class="task-box">
-        <h3>Создание таблицы</h3>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-            <input type="number" id="rowsInput" placeholder="Количество строк" min="1" style="padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            <input type="number" id="colsInput" placeholder="Количество столбцов" min="1" style="padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            <button class="task-btn" onclick="generateTable()">Создать таблицу</button>
-        </div>
-        <div id="tableContainer" style="overflow-x: auto; margin-top: 15px;"></div>
-    </div>
-
-    <div class="task-box" id="colorCounterBox" style="display: none;">
-        <h3>Подсчет ячеек по цвету</h3>
-        <p>Нажмите на ячейки таблицы, чтобы изменить их цвет (по клику он меняется циклично).</p>
-        <button class="task-btn" onclick="countColoredCells()">Посчитать зеленые ячейки</button>
-        <p id="counterOutput" style="margin-top: 10px; font-weight: bold; color: #065f46;"></p>
-    </div>
-</div>
-
-<!-- ВКЛАДКА: Задание 4 (Темная тема) -->
-        <div id="tab-task4" class="tab-content">
-            <div class="main-header">
-                <h1>Задание 4: Темная тема</h1>
-                <p>Включите темную тему. Активируйте переключатель темной темы. При нажатии на него цветовой режим изменится.</p>
+                <h1>Задание 3: Генератор таблицы и цвета</h1>
             </div>
 
             <div class="task-box">
-                <h3>Управление темой всей страницы</h3>
-                <p>Нажмите на переключатель, чтобы изменить тему сайта целиком:</p>
-                <button class="task-btn" id="globalThemeBtn" onclick="toggleGlobalTheme()">🌙 Включить темную тему</button>
+                <h3 style="margin-bottom: 12px;">Создать таблицу</h3>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 15px;">
+                    <input type="number" id="rowsInput" class="task-input" placeholder="Количество строк" min="1" style="flex: 1; min-width: 140px; width: auto;">
+                    <input type="number" id="colsInput" class="task-input" placeholder="Количество столбцов" min="1" style="flex: 1; min-width: 140px; width: auto;">
+                    <button class="task-btn" onclick="generateTable()" style="margin: 0; padding: 10px 20px;">Сгенерировать</button>
+                </div>
+
+                <div class="table-container-wrapper">
+                    <div id="tableContainer"></div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="task-btn" onclick="countColoredCells()">Посчитать зеленые ячейки</button>
+                    <p id="countOutput" class="count-output"></p>
+                </div>
             </div>
         </div>
+
+
+    </div><!-- /main-container -->
+
     <script src="shared.js"></script>
 </body>
 </html>
