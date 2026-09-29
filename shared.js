@@ -176,49 +176,32 @@ function showClassesInfo() {
     document.getElementById('classes-output').textContent = classListString ? classListString : 'У элемента нет классов';
 }
 
-const GREEN = 'rgb(209, 250, 229)';
+/* ===================== ЗАДАНИЕ 3 ===================== */
 
 function generateTable() {
-    const rows = parseInt(document.getElementById('rowsInput').value, 10);
-    const cols = parseInt(document.getElementById('colsInput').value, 10);
-    const container = document.getElementById('tableContainer');
-    container.innerHTML = '';
+    const rows = +document.getElementById('rowsInput').value;
+    const cols = +document.getElementById('colsInput').value;
 
-    if (!rows || !cols || rows <= 0 || cols <= 0) {
-        alert('Введите корректные размеры!');
-        return;
-    }
-
-    const table = document.createElement('table');
+    let html = '';
     for (let i = 0; i < rows; i++) {
-        const tr = document.createElement('tr');
-        for (let j = 0; j < cols; j++) {
-            const td = document.createElement('td');
-            td.onclick = function () {
-                this.style.backgroundColor =
-                    this.style.backgroundColor === GREEN ? '' : '#d1fae5';
-            };
-            tr.appendChild(td);
-        }
-        table.appendChild(tr);
+        html += '<tr>' + '<td onclick="paintCell(this)"></td>'.repeat(cols) + '</tr>';
     }
-    container.appendChild(table);
-    document.getElementById('countOutput').textContent = '';
+    document.getElementById('tableContainer').innerHTML = '<table>' + html + '</table>';
+    updateCount();
 }
 
-function countColoredCells() {
-    const table = document.querySelector('#tableContainer table');
-    if (!table) return alert('Сначала создайте таблицу!');
-
-    let count = 0;
-    table.querySelectorAll('td').forEach(td => {
-        if (td.style.backgroundColor === GREEN) count++;
-    });
-    document.getElementById('countOutput').textContent =
-        `Количество зеленых ячеек: ${count}`;
+function paintCell(td) {
+    td.classList.toggle('green');
+    updateCount();
 }
 
-// Бүкіл бетті қараңғы/жарық режимге ауыстыратын функция
+function updateCount() {
+    const count = document.querySelectorAll('td.green').length;
+    document.getElementById('countOutput').textContent = 'Количество зеленых ячеек: ' + count;
+}
+
+
+
 function toggleGlobalTheme() {
     const body = document.body;
     body.classList.toggle('global-dark-mode');
