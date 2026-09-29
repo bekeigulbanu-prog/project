@@ -175,3 +175,33 @@ function showClassesInfo() {
     console.log('Классы элемента:', classListString);
     document.getElementById('classes-output').textContent = classListString ? classListString : 'У элемента нет классов';
 }
+
+function generateTable() {
+    let rows = document.getElementById('rowsInput').value;
+    let cols = document.getElementById('colsInput').value;
+    let container = document.getElementById('tableContainer');
+
+    container.innerHTML = '<table class="dynamic-table" id="myTable"></table>';
+    let table = document.getElementById('myTable');
+
+    for (let i = 0; i < rows; i++) {
+        let tr = document.createElement('tr');
+        for (let j = 0; j < cols; j++) {
+            let td = document.createElement('td');
+            
+            td.onclick = function() {
+                this.classList.toggle('color-state-1');
+            };
+            
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+    
+    document.getElementById('colorCounterBox').style.display = 'block';
+}
+
+function countColoredCells() {
+    let count = document.querySelectorAll('.dynamic-table td.color-state-1').length;
+    document.getElementById('counterOutput').textContent = 'Зеленых ячеек: ' + count;
+}

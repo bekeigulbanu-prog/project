@@ -24,6 +24,7 @@
                 <div style="margin-top: 15px;">
                     <button class="action-btn" onclick="showTaskTab('task1', 'Задание 1')">Открыть Задание 1 ➔</button>
                     <button class="action-btn" onclick="showTaskTab('task2', 'Задание 2')">Открыть Задание 2 ➔</button>
+                    <button class="action-btn" onclick="showTaskTab('task3', 'Задание 3')">Открыть Задание 3 ➔</button>
                 </div>
             </div>
         </div>
@@ -138,6 +139,28 @@
         </div>
 
     </div>
+    <div id="tab-task3" class="tab-content">
+            <div class="main-header">
+                <h1>Задание 3: Таблица</h1>
+            </div>
+            <div class="task-box">
+        <h3>Создание таблицы</h3>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+            <input type="number" id="rowsInput" placeholder="Количество строк" min="1" style="padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <input type="number" id="colsInput" placeholder="Количество столбцов" min="1" style="padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <button class="task-btn" onclick="generateTable()">Создать таблицу</button>
+        </div>
+        <div id="tableContainer" style="overflow-x: auto; margin-top: 15px;"></div>
+    </div>
+
+    <div class="task-box" id="colorCounterBox" style="display: none;">
+        <h3>Подсчет ячеек по цвету</h3>
+        <p>Нажмите на ячейки таблицы, чтобы изменить их цвет (по клику он меняется циклично).</p>
+        <button class="task-btn" onclick="countColoredCells()">Посчитать зеленые ячейки</button>
+        <p id="counterOutput" style="margin-top: 10px; font-weight: bold; color: #065f46;"></p>
+    </div>
+</div>
+
 
     <script src="shared.js"></script>
 </body>

@@ -234,3 +234,27 @@ body {
     background-color: rgba(239, 68, 68, 0.15);
     color: #ef4444;
 }
+
+.dynamic-table {
+    border-collapse: collapse;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.dynamic-table td {
+    border: 1px solid #cbd5e1;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.dynamic-table td.color-state-1 {
+    background-color: #d1fae5; 
+}
+
+.dynamic-table td.color-state-2 {
+    background-color: #fef3c7; 
+}
