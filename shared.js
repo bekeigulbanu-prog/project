@@ -71,7 +71,7 @@ function showResume(person) {
         tabsHeader.appendChild(newBtn);
     }
 
-    openTab(tabId, btnId);
+    openTab(tabId, btnId); 
 }
 
 function closeResumeTab(event, tabId, btnId) {
