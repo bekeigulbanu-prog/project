@@ -275,8 +275,8 @@ body {
     transition: background-color 0.15s;
 }
 
-#tableContainer td:hover {
-    background-color: #eff6ff;
+#tableContainer td.green {
+    background-color: #d1fae5;
 }
 
 .count-output {
