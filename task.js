@@ -58,3 +58,42 @@ function normalize(data) {
         }))
         .filter(task => task.text);
 }
+
+async function loadFromApi() {
+    const url = $('apiUrl').value.trim();
+    if (!url.startsWith('https://')) {
+        setStatus('Введите HTTPS-ссылку, начинающуюся с https://', true);
+        return;
+    }
+
+    setStatus('Загрузка...');
+    try {
+        todos = normalize(await fetchJson(url));
+        editingId = null;
+        save();
+        render();
+        setStatus(Загружено задач: ${todos.length});
+    } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        setStatus('Не удалось загрузить. Проверьте ссылку: API должен возвращать список задач и разрешать запросы из браузера.', true);
+    }
+}
+
+function usePreset(name) {
+    $('apiUrl').value = PRESETS[name];
+    loadFromApi();
+}
+
+async function addRandomTask() {
+    setStatus('Загрузка...');
+    try {
+        const [task] = normalize([await fetchJson(RANDOM_URL)]);
+        todos.unshift(task);
+        save();
+        render();
+        setStatus('Добавлена случайная задача.');
+    } catch (error) {
+        console.error('Ошибка:', error);
+        setStatus('Не удалось получить случайную задачу.', true);
+    }
+}
