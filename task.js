@@ -7,9 +7,9 @@ const RANDOM_URL = 'https://dummyjson.com/todos/random';
 const STORAGE_KEY = 'todo-app-state';
 
 let todos = [];        
-let filter = 'all';  
+let filter = 'all';    
 let editingId = null;  
-let nextId = 1;        
+let nextId = 1;       
 
 const $ = id => document.getElementById(id);
 
@@ -32,6 +32,8 @@ function save() {
         console.error('Не удалось сохранить:', error);
     }
 }
+
+
 
 function setStatus(message, isError = false) {
     const el = $('status');
@@ -59,6 +61,8 @@ function normalize(data) {
         .filter(task => task.text);
 }
 
+
+
 async function loadFromApi() {
     const url = $('apiUrl').value.trim();
     if (!url.startsWith('https://')) {
@@ -72,7 +76,7 @@ async function loadFromApi() {
         editingId = null;
         save();
         render();
-        setStatus(Загружено задач: ${todos.length});
+        setStatus(`Загружено задач: ${todos.length}`);
     } catch (error) {
         console.error('Ошибка загрузки:', error);
         setStatus('Не удалось загрузить. Проверьте ссылку: API должен возвращать список задач и разрешать запросы из браузера.', true);
@@ -97,6 +101,8 @@ async function addRandomTask() {
         setStatus('Не удалось получить случайную задачу.', true);
     }
 }
+
+
 
 function addTodo() {
     const input = $('todoInput');
@@ -150,6 +156,8 @@ function saveEdit(id, value) {
     save();
     render();
 }
+
+
 
 function makeButton(label, className, onClick) {
     const btn = document.createElement('button');
@@ -228,6 +236,8 @@ function render() {
     });
 }
 
+
+
 document.querySelectorAll('.chip').forEach(chip => {
     chip.onclick = () => {
         filter = chip.dataset.filter;
@@ -249,7 +259,7 @@ function init() {
         nextId = Math.max(0, ...todos.map(t => t.id)) + 1;
         if (saved.url) $('apiUrl').value = saved.url;
         render();
-        setStatus(Восстановлено задач: ${todos.length});
+        setStatus(`Восстановлено задач: ${todos.length}`);
     } else {
         render();
         loadFromApi(); // первый запуск: сразу загружаем задачи
