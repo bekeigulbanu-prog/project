@@ -176,29 +176,75 @@ function showClassesInfo() {
     document.getElementById('classes-output').textContent = classListString ? classListString : 'У элемента нет классов';
 }
 
-/* ===================== ЗАДАНИЕ 3 ===================== */
+let currentColor = '#22c55e'; // По умолчанию зеленый
+let currentColorName = 'Зеленый';
 
-function generateTable() {
-    const rows = +document.getElementById('rowsInput').value;
-    const cols = +document.getElementById('colsInput').value;
+function selectColor(color, name) {
+    currentColor = color;
+    currentColorName = name;
+    document.getElementById('selectedColorText').textContent = `Выбранный цвет: ${name}`;
+}
 
-    let html = '';
+function createTable() {
+    const rows = document.getElementById('rowsInput').value;
+    const cols = document.getElementById('colsInput').value;
+    const container = document.getElementById('tableContainer');
+    container.innerHTML = '';
+
+    if (rows <= 0 || cols <= 0) return;
+
+    const table = document.createElement('table');
     for (let i = 0; i < rows; i++) {
-        html += '<tr>' + '<td onclick="paintCell(this)"></td>'.repeat(cols) + '</tr>';
+        const tr = document.createElement('tr');
+        for (let j = 0; j < cols; j++) {
+            const td = document.createElement('td');
+            td.style.width = '45px';
+            td.style.height = '45px';
+            td.style.border = '1px solid #cbd5e1';
+            td.style.cursor = 'pointer';
+            td.style.textAlign = 'center';
+            td.style.verticalAlign = 'middle';
+            td.style.transition = 'background-color 0.2s';
+            
+            td.onclick = function() {
+                this.style.backgroundColor = currentColor;
+                updateStats();
+            };
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
     }
-    document.getElementById('tableContainer').innerHTML = '<table>' + html + '</table>';
-    updateCount();
+    container.appendChild(table);
+    updateStats();
 }
 
-function paintCell(td) {
-    td.classList.toggle('green');
-    updateCount();
+function updateStats() {
+    const table = document.querySelector('#tableContainer table');
+    if (!table) return;
+
+    let red = 0, green = 0, blue = 0, yellow = 0;
+
+    table.querySelectorAll('td').forEach(td => {
+        const bg = td.style.backgroundColor;
+        if (bg === 'rgb(220, 38, 38)') red++;       // #dc2626
+        if (bg === 'rgb(34, 197, 94)') green++;     // #22c55e
+        if (bg === 'rgb(59, 130, 246)') blue++;     // #3b82f6
+        if (bg === 'rgb(234, 179, 8)') yellow++;    // #eab308
+    });
+
+    document.getElementById('stat-red').textContent = red;
+    document.getElementById('stat-green').textContent = green;
+    document.getElementById('stat-blue').textContent = blue;
+    document.getElementById('stat-yellow').textContent = yellow;
+    document.getElementById('stat-total').textContent = red + green + blue + yellow;
 }
 
-function updateCount() {
-    const count = document.querySelectorAll('td.green').length;
-    document.getElementById('countOutput').textContent = 'Количество зеленых ячеек: ' + count;
-}
+// Автоматически генерируем таблицу при загрузке страницы, если блок виден
+window.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('rowsInput')) {
+        createTable();
+    }
+});
 
 
 
