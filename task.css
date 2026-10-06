@@ -170,3 +170,22 @@ input[type="url"]:focus {
 .stat strong.green { color: #16a34a; }
 .stat strong.red   { color: #dc2626; }
 
+.filters {
+    margin: 12px 0 16px;
+}
+
+.chip {
+    padding: 6px 14px;
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.chip.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
