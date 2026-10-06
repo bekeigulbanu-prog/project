@@ -189,3 +189,60 @@ input[type="url"]:focus {
     color: #ffffff;
     border-color: #2563eb;
 }
+/* Список задач */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.todo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.todo input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.todo .text {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+}
+
+.todo.done .text {
+    text-decoration: line-through;
+    color: #94a3b8;
+}
+
+.edit-field {
+    flex: 1;
+}
+
+.actions {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.empty {
+    text-align: center;
+    color: #94a3b8;
+    padding: 16px;
+}
+
+@media (max-width: 520px) {
+    .todo { flex-wrap: wrap; }
+    .todo .text { flex-basis: calc(100% - 30px); }
+    .actions { margin-left: 28px; }
+}
