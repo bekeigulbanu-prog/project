@@ -239,7 +239,6 @@ function updateStats() {
     document.getElementById('stat-total').textContent = red + green + blue + yellow;
 }
 
-// Автоматически генерируем таблицу при загрузке страницы, если блок виден
 window.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('rowsInput')) {
         createTable();
