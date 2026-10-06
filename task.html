@@ -28,3 +28,13 @@ body>
                 Сюда нужно ввести не ключ API, а HTTPS-ссылку, которая отдаёт задачи.
                 API должен разрешать загрузку из браузера.
             </p>
+            <div class="row">
+                <button class="btn btn-outline" onclick="usePreset('dummy')">DummyJSON</button>
+                <button class="btn btn-outline" onclick="usePreset('placeholder')">JSONPlaceholder</button>
+                <button class="btn btn-outline" onclick="usePreset('gorest')">Go REST</button>
+                <button class="btn btn-outline" onclick="addRandomTask()">Случайная задача</button>
+            </div>
+
+            <p id="status" class="status"></p>
+        </div>
+
