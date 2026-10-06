@@ -37,7 +37,7 @@ body>
 
             <p id="status" class="status"></p>
         </div>
-        
+
         <div class="card">
             <h3>Мои задачи</h3>
 
@@ -45,4 +45,17 @@ body>
                 <input type="text" id="todoInput" placeholder="Новая задача..." autocomplete="off">
                 <button class="btn btn-gold" onclick="addTodo()">Добавить</button>
             </div>
+            <div class="row filters">
+                <button class="chip" data-filter="all">Все</button>
+                <button class="chip" data-filter="done">Выполненные</button>
+                <button class="chip" data-filter="pending">Не выполненные</button>
+            </div>
+
+            <ul id="todoList"></ul>
+        </div>
+    </div>
+
+    <script src="task.js"></script>
+</body>
+</html>
 
