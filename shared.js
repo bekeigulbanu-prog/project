@@ -260,3 +260,8 @@ function toggleGlobalTheme() {
         btn.style.backgroundColor = '#2563eb';
     }
 }
+
+
+
+
+
