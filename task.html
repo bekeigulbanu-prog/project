@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Менеджер задач (CRUD + API)</title>
-    <link rel="stylesheet" href="task.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-body>
+<body>
 
     <div class="container">
         <h1>Менеджер задач (CRUD + API)</h1>
@@ -28,6 +28,7 @@ body>
                 Сюда нужно ввести не ключ API, а HTTPS-ссылку, которая отдаёт задачи.
                 API должен разрешать загрузку из браузера.
             </p>
+
             <div class="row">
                 <button class="btn btn-outline" onclick="usePreset('dummy')">DummyJSON</button>
                 <button class="btn btn-outline" onclick="usePreset('placeholder')">JSONPlaceholder</button>
@@ -38,6 +39,14 @@ body>
             <p id="status" class="status"></p>
         </div>
 
+        <!-- Статистика -->
+        <div class="stats">
+            <div class="stat"><span>Всего</span><strong id="totalCount">0</strong></div>
+            <div class="stat"><span>Выполнено</span><strong id="completedCount" class="green">0</strong></div>
+            <div class="stat"><span>Не выполнено</span><strong id="pendingCount" class="red">0</strong></div>
+        </div>
+
+        <!-- Список задач -->
         <div class="card">
             <h3>Мои задачи</h3>
 
@@ -45,6 +54,7 @@ body>
                 <input type="text" id="todoInput" placeholder="Новая задача..." autocomplete="off">
                 <button class="btn btn-gold" onclick="addTodo()">Добавить</button>
             </div>
+
             <div class="row filters">
                 <button class="chip" data-filter="all">Все</button>
                 <button class="chip" data-filter="done">Выполненные</button>
@@ -55,7 +65,6 @@ body>
         </div>
     </div>
 
-    <script src="task.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
-
