@@ -141,3 +141,32 @@ input[type="url"]:focus {
 .status.error {
     color: #dc2626;
 }
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    background: #ffffff;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.stat span {
+    display: block;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.stat strong {
+    font-size: 32px;
+    color: #1e293b;
+}
+
+.stat strong.green { color: #16a34a; }
+.stat strong.red   { color: #dc2626; }
+
