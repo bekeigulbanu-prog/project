@@ -227,3 +227,33 @@ function render() {
         chip.classList.toggle('active', chip.dataset.filter === filter);
     });
 }
+
+document.querySelectorAll('.chip').forEach(chip => {
+    chip.onclick = () => {
+        filter = chip.dataset.filter;
+        render();
+    };
+});
+
+$('todoInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTodo();
+});
+$('apiUrl').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadFromApi();
+});
+
+function init() {
+    const saved = readState();
+    if (saved) {
+        todos = Array.isArray(saved.todos) ? saved.todos : [];
+        nextId = Math.max(0, ...todos.map(t => t.id)) + 1;
+        if (saved.url) $('apiUrl').value = saved.url;
+        render();
+        setStatus(Восстановлено задач: ${todos.length});
+    } else {
+        render();
+        loadFromApi(); // первый запуск: сразу загружаем задачи
+    }
+}
+
+init();
