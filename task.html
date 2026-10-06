@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Менеджер задач (CRUD + API)</title>
+    <link rel="stylesheet" href="task.css">
+</head>
+body>
+
+    <div class="container">
+        <h1>Менеджер задач (CRUD + API)</h1>
+
+        <!-- Загрузка задач по ссылке -->
+        <div class="card">
+            <div class="card-head">
+                <div>
+                    <h3>Загрузка задач</h3>
+                    <p class="muted">Введите ссылку на API или выберите готовый пример.</p>
+                </div>
+                <button class="btn btn-gold" onclick="loadFromApi()">Загрузить задачи ↓</button>
+            </div>
+
+            <label for="apiUrl" class="muted">Ссылка на API</label>
+            <input type="url" id="apiUrl" value="https://dummyjson.com/todos" autocomplete="off">
+
+            <p class="muted hint">
+                Сюда нужно ввести не ключ API, а HTTPS-ссылку, которая отдаёт задачи.
+                API должен разрешать загрузку из браузера.
+            </p>
+            <div class="row">
+                <button class="btn btn-outline" onclick="usePreset('dummy')">DummyJSON</button>
+                <button class="btn btn-outline" onclick="usePreset('placeholder')">JSONPlaceholder</button>
+                <button class="btn btn-outline" onclick="usePreset('gorest')">Go REST</button>
+                <button class="btn btn-outline" onclick="addRandomTask()">Случайная задача</button>
+            </div>
+
+            <p id="status" class="status"></p>
+        </div>
+
