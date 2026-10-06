@@ -1,0 +1,143 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f1f5f9;
+    color: #1e293b;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0 0 20px 0;
+}
+
+.card {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+h3 {
+    margin: 0 0 6px 0;
+    color: #334155;
+    font-size: 16px;
+}
+
+.card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.muted {
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+}
+
+label.muted {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.hint {
+    margin: 12px 0;
+}
+
+/* Поля ввода */
+input[type="text"],
+input[type="url"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus {
+    border-color: #2563eb;
+}
+
+/* Кнопки */
+.btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.btn-gold {                 /* основная кнопка */
+    background-color: #2563eb;
+    color: #ffffff;
+}
+.btn-gold:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-outline {              /* вторичная кнопка */
+    background-color: #f8fafc;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+.btn-outline:hover {
+    background-color: #e2e8f0;
+}
+
+.btn-danger {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.row.no-margin {
+    margin-top: 12px;
+}
+
+.row input {
+    flex: 1;
+    min-width: 160px;
+    width: auto;
+}
+
+.status {
+    margin: 12px 0 0 0;
+    min-height: 20px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.status.error {
+    color: #dc2626;
+}
