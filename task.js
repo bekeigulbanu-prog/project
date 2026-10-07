@@ -6,14 +6,13 @@ const PRESETS = {
 const RANDOM_URL = 'https://dummyjson.com/todos/random';
 const STORAGE_KEY = 'todo-app-state';
 
-let todos = [];        // Список задач: { id, text, completed }
-let filter = 'all';    // all | done | pending
-let editingId = null;  // ID задачи, которая сейчас редактируется
-let nextId = 1;        // Внутренние уникальные ID
+let todos = [];   
+let filter = 'all';    
+let editingId = null;  
+let nextId = 1;        
 
 const $ = id => document.getElementById(id);
 
-/* ============ Сохранение в браузере ============ */
 
 function readState() {
     try {
@@ -34,7 +33,7 @@ function save() {
     }
 }
 
-/* ============ Вспомогательное ============ */
+
 
 function setStatus(message, isError = false) {
     const el = $('status');
@@ -48,10 +47,7 @@ async function fetchJson(url) {
     return response.json();
 }
 
-// Приводим ответ разных API к единому виду:
-// DummyJSON:      { todos: [{ todo, completed }] }
-// JSONPlaceholder: [{ title, completed }]
-// Go REST:         [{ title, status: 'completed' | 'pending' }]
+
 function normalize(data) {
     const list = Array.isArray(data) ? data : data && data.todos;
     if (!Array.isArray(list)) throw new Error('Неверный формат ответа');
@@ -65,7 +61,7 @@ function normalize(data) {
         .filter(task => task.text);
 }
 
-/* ============ Загрузка из API ============ */
+
 
 async function loadFromApi() {
     const url = $('apiUrl').value.trim();
@@ -106,7 +102,7 @@ async function addRandomTask() {
     }
 }
 
-/* ============ Действия с задачами ============ */
+
 
 function addTodo() {
     const input = $('todoInput');
@@ -161,7 +157,7 @@ function saveEdit(id, value) {
     render();
 }
 
-/* ============ Отрисовка ============ */
+
 
 function makeButton(label, className, onClick) {
     const btn = document.createElement('button');
@@ -200,7 +196,7 @@ function createItem(todo) {
         li.append(checkbox, field, actions);
         setTimeout(() => { field.focus(); field.select(); }, 0);
     } else {
-        // textContent, а не innerHTML — защита от вставки HTML в текст задачи
+        
         const text = document.createElement('span');
         text.className = 'text';
         text.textContent = todo.text;
@@ -240,7 +236,7 @@ function render() {
     });
 }
 
-/* ============ События и запуск ============ */
+
 
 document.querySelectorAll('.chip').forEach(chip => {
     chip.onclick = () => {
@@ -266,7 +262,7 @@ function init() {
         setStatus(`Восстановлено задач: ${todos.length}`);
     } else {
         render();
-        loadFromApi(); // первый запуск: сразу загружаем задачи
+        loadFromApi(); 
     }
 }
 
