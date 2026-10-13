@@ -368,3 +368,234 @@ function render() {
     });
 }
 
+function fillAuthorSelect() {
+    if (!usersMap.size) return;
+    const sel = $('authorSel');
+    const keep = sel.value || String(CURRENT_USER_ID);
+    sel.replaceChildren(...[...usersMap.values()].map(u => {
+        const o = document.createElement('option');
+        o.value = String(u.id);
+        o.textContent = `${u.firstName} ${u.lastName} (@${u.username}) · ID ${u.id}`;
+        return o;
+    }));
+    sel.value = keep;
+}
+
+// Все имена и аватарки — одним запросом и только нужные поля
+async function loadUsers() {
+    if (usersMap.size) return; // уже загружены, повторно не запрашиваем
+    try {
+        const data = await fetchJson('https://dummyjson.com/users?limit=0&select=firstName,lastName,username,image');
+        usersMap = new Map(data.users.map(u => [u.id, u]));
+        fillAuthorSelect();
+        render(); // теперь можно показать ники
+    } catch (error) {
+        console.error('Не удалось загрузить пользователей:', error);
+    }
+}
+
+// Подробный профиль и задачи пользователя грузим лениво (при наведении/клике) и кэшируем
+function getProfile(id) {
+    if (!profileCache.has(id)) {
+        const request = Promise.all([
+            fetchJson(`https://dummyjson.com/users/${id}`),
+            fetchJson(`https://dummyjson.com/todos/user/${id}`) // фильтрация на сервере
+        ])
+            .then(([user, list]) => ({ user, todos: list.todos }))
+            .catch(error => { profileCache.delete(id); throw error; });
+        profileCache.set(id, request);
+    }
+    return profileCache.get(id);
+}
+
+// Автор показывается под задачей у любой задачи, у которой есть userId
+function makeAuthor(todo) {
+    if (!todo.userId) return null;
+
+    const user = usersMap.get(todo.userId);
+    const btn = document.createElement('button');
+    btn.className = 'nick';
+
+    if (user && user.image) {
+        const img = document.createElement('img');
+        img.src = user.image;
+        img.alt = '';
+        btn.append(img);
+    }
+    btn.append(user ? '@' + user.username : 'Пользователь #' + todo.userId);
+    if (user) btn.title = `${user.firstName} ${user.lastName}`;
+
+    const prefetch = () => getProfile(todo.userId).catch(() => {});
+    btn.onmouseenter = prefetch; // ленивая загрузка при наведении
+    btn.onfocus = prefetch;
+    btn.onclick = () => openProfile(todo.userId, btn);
+    return btn;
+}
+
+// Задачи пользователя с сервера + наши локальные изменения
+function profileTodos(userId, serverList) {
+    const fromServer = serverList
+        .filter(t => !deletedServerIds.has(t.id))
+        .map(t => {
+            const mine = todos.find(x => x.api === 'dummy' && !x.local && x.serverId === t.id);
+            const src = mine || serverEdits.get(t.id) || { text: t.todo, completed: t.completed };
+            return { id: t.id, localId: null, text: src.text, completed: src.completed };
+        });
+    const created = todos
+        .filter(x => x.local && x.userId === userId)
+        .map(x => ({ id: null, localId: x.id, text: x.text, completed: x.completed }));
+    return [...created, ...fromServer];
+}
+
+let currentProfile = null;
+let lastFocus = null;
+
+async function openProfile(userId, trigger) {
+    currentProfile = userId;
+    lastFocus = trigger;
+    $('overlay').hidden = false;
+    $('profileBody').textContent = 'Загрузка...';
+    $('closeBtn').focus();
+
+    try {
+        const { user, todos: serverList } = await getProfile(userId);
+        if (currentProfile !== userId) return; // окно уже закрыли
+        renderProfile(user, profileTodos(userId, serverList));
+    } catch (error) {
+        console.error('Ошибка профиля:', error);
+        if (currentProfile === userId) $('profileBody').textContent = 'Не удалось загрузить профиль.';
+    }
+}
+
+function closeProfile() {
+    currentProfile = null;
+    $('overlay').hidden = true;
+    if (lastFocus) lastFocus.focus();
+}
+
+function textEl(tag, className, text) {
+    const e = document.createElement(tag);
+    if (className) e.className = className;
+    e.textContent = text;
+    return e;
+}
+
+const GENDERS = { male: 'Мужской', female: 'Женский' };
+
+function renderProfile(user, list) {
+    const a = user.address || {};
+    const c = user.company || {};
+    const hair = user.hair ? [user.hair.color, user.hair.type].filter(Boolean).join(', ') : '';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'profile';
+
+    // Слева: фото и подробная информация
+    const info = document.createElement('div');
+
+    const head = document.createElement('div');
+    head.className = 'profile-head';
+    const img = document.createElement('img');
+    img.className = 'avatar';
+    img.src = user.image;
+    img.alt = '';
+    const titles = document.createElement('div');
+    titles.append(
+        textEl('h2', '', `${user.firstName} ${user.lastName}`),
+        textEl('div', 'handle', `@${user.username} · ID ${user.id}`)
+    );
+    head.append(img, titles);
+
+    const dl = document.createElement('dl');
+    [
+        ['Email', user.email],
+        ['Телефон', user.phone],
+        ['Девичья фамилия', user.maidenName],
+        ['Возраст', user.age ? `${user.age} лет` : ''],
+        ['Пол', GENDERS[user.gender] || user.gender],
+        ['Дата рождения', user.birthDate],
+        ['Адрес', [a.address, a.city, a.state, a.country].filter(Boolean).join(', ')],
+        ['Индекс', a.postalCode],
+        ['Компания', c.name],
+        ['Отдел', c.department],
+        ['Должность', c.title],
+        ['Университет', user.university],
+        ['Роль', user.role],
+        ['Рост / вес', user.height && user.weight ? `${user.height} см / ${user.weight} кг` : ''],
+        ['Группа крови', user.bloodGroup],
+        ['Цвет глаз', user.eyeColor],
+        ['Волосы', hair],
+        ['IP-адрес', user.ip]
+    ].forEach(([label, value]) => {
+        if (!value) return;
+        dl.append(textEl('dt', '', label), textEl('dd', '', String(value)));
+    });
+    info.append(head, dl);
+
+    // Справа: все задачи пользователя
+    const side = document.createElement('div');
+    side.className = 'profile-side';
+
+    const msg = textEl('p', 'status error', '');
+    const ul = document.createElement('ul');
+    ul.className = 'profile-tasks';
+    let editingKey = null;
+    const keyOf = t => (t.localId ? 'l' + t.localId : 's' + t.id);
+
+    const renderTasks = () => {
+        ul.replaceChildren();
+        if (!list.length) ul.append(textEl('li', 'empty', 'Задач нет.'));
+        list.forEach(t => {
+            const li = document.createElement('li');
+            const body = document.createElement('div');
+            body.className = 't-body';
+            const actions = document.createElement('div');
+            actions.className = 't-actions';
+
+            if (keyOf(t) === editingKey) {
+                // Режим редактирования
+                const field = document.createElement('input');
+                field.type = 'text';
+                field.value = t.text;
+                const label = document.createElement('label');
+                label.className = 'check';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.checked = t.completed;
+                label.append(cb, ' Выполнено');
+
+                const submit = () => profileEdit(t, field.value, cb.checked, msg);
+                field.onkeydown = e => {
+                    if (e.key === 'Enter') submit();
+                    if (e.key === 'Escape') { e.stopPropagation(); editingKey = null; renderTasks(); }
+                };
+                body.append(field, label);
+                actions.append(
+                    makeButton('Сохранить', 'btn btn-gold btn-sm', submit),
+                    makeButton('Отмена', 'btn btn-outline btn-sm', () => { editingKey = null; renderTasks(); })
+                );
+                setTimeout(() => { field.focus(); field.select(); }, 0);
+            } else {
+                const meta = document.createElement('div');
+                meta.className = 't-meta';
+                meta.append(
+                    textEl('span', t.completed ? 'state ok' : 'state', t.completed ? 'Выполнено' : 'Не выполнено'),
+                    textEl('span', '', t.id ? `Задача #${t.id}` : 'Создана на странице')
+                );
+                body.append(textEl('div', 't-text' + (t.completed ? ' done' : ''), t.text), meta);
+                actions.append(
+                    makeButton('Изменить', 'btn btn-outline btn-sm', () => { msg.textContent = ''; editingKey = keyOf(t); renderTasks(); }),
+                    makeButton('Удалить', 'btn btn-danger btn-sm', () => profileRemove(t, msg))
+                );
+            }
+            li.append(body, actions);
+            ul.append(li);
+        });
+    };
+    renderTasks();
+
+    side.append(msg, ul);
+    wrap.append(info, side);
+    $('profileBody').replaceChildren(wrap);
+}
+
