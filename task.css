@@ -57,3 +57,18 @@ label.muted {
 .hint {
     margin: 12px 0;
 }
+
+input[type="text"],
+input[type="url"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus {
+    border-color: #2563eb;
+}
