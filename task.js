@@ -599,3 +599,61 @@ function renderProfile(user, list) {
     $('profileBody').replaceChildren(wrap);
 }
 
+async function refreshProfile() {
+    if (currentProfile == null) return;
+    const id = currentProfile;
+    try {
+        const { user, todos: serverList } = await getProfile(id);
+        if (currentProfile !== id) return;
+        renderProfile(user, profileTodos(id, serverList));
+    } catch (error) {
+        console.error('Ошибка профиля:', error);
+    }
+}
+
+// Та же задача в общем списке (если она там есть)
+function findMine(item) {
+    if (item.localId) return todos.find(t => t.id === item.localId);
+    return todos.find(t => t.api === 'dummy' && !t.local && t.serverId === item.id);
+}
+
+async function profileEdit(item, value, completed, msg) {
+    const text = value.trim();
+    if (!text) {
+        msg.textContent = 'Текст задачи не может быть пустым.';
+        return;
+    }
+    const mine = findMine(item);
+    const target = mine
+        ? { ...mine, text, completed }
+        : { api: 'dummy', serverId: item.id, userId: currentProfile, text, completed };
+
+    if (!(await syncServer(target, 'PUT'))) {   // PUT
+        msg.textContent = $('status').textContent;
+        return;
+    }
+    if (mine) {
+        mine.text = text;
+        mine.completed = completed;
+    } else {
+        serverEdits.set(item.id, { text, completed });
+    }
+    save();
+    render();
+    refreshProfile();
+}
+
+async function profileRemove(item, msg) {
+    const mine = findMine(item);
+    const target = mine || { api: 'dummy', serverId: item.id, userId: currentProfile };
+
+    if (!(await syncServer(target, 'DELETE'))) {   // DELETE
+        msg.textContent = $('status').textContent;
+        return;
+    }
+    if (!item.localId) deletedServerIds.add(item.id);
+    if (mine) todos = todos.filter(t => t !== mine);
+    save();
+    render();
+    refreshProfile();
+}
