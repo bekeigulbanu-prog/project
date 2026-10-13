@@ -249,3 +249,122 @@ async function saveEdit(id, value) {
     save();
     render();
 }
+function makeButton(label, className, onClick) {
+    const btn = document.createElement('button');
+    btn.className = className;
+    btn.textContent = label;
+    btn.onclick = onClick;
+    return btn;
+}
+
+function createItem(todo) {
+    const li = document.createElement('li');
+    li.className = 'todo' + (todo.completed ? ' done' : '');
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = todo.completed;
+    checkbox.onchange = () => toggleTodo(todo.id);
+
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+
+    if (todo.id === editingId) {
+        const field = document.createElement('input');
+        field.type = 'text';
+        field.className = 'edit-field';
+        field.value = todo.text;
+        field.onkeydown = e => {
+            if (e.key === 'Enter') saveEdit(todo.id, field.value);
+            if (e.key === 'Escape') cancelEdit();
+        };
+
+        actions.append(
+            makeButton('Сохранить', 'btn btn-gold btn-sm', () => saveEdit(todo.id, field.value)),
+            makeButton('Отмена', 'btn btn-outline btn-sm', cancelEdit)
+        );
+        li.append(checkbox, field, actions);
+        setTimeout(() => { field.focus(); field.select(); }, 0);
+    } else {
+        // textContent, а не innerHTML — защита от вставки HTML в текст задачи
+        const text = document.createElement('span');
+        text.className = 'text';
+        text.textContent = todo.text;
+
+        actions.append(
+            makeButton('Изменить', 'btn btn-outline btn-sm', () => startEdit(todo.id)),
+            makeButton('Удалить', 'btn btn-danger btn-sm', () => removeTodo(todo.id))
+        );
+        const body = document.createElement('div');
+        body.className = 'body';
+        body.append(text);
+        const nick = makeAuthor(todo);
+        if (nick) body.append(nick);   // автор — под текстом задачи
+
+        li.append(checkbox, body, actions);
+    }
+    return li;
+}
+
+function userLabel(id) {
+    const u = usersMap.get(id);
+    return u ? `${u.firstName} ${u.lastName} (@${u.username})` : `Пользователь #${id}`;
+}
+
+let authorFilterSig = '';
+function updateAuthorFilter() {
+    const ids = [...new Set(todos.map(t => t.userId).filter(Boolean))].sort((a, b) => a - b);
+    if (authorFilter !== 'all' && !ids.includes(Number(authorFilter))) authorFilter = 'all';
+
+    const sig = ids.join(',') + '|' + usersMap.size;
+    if (sig !== authorFilterSig) {
+        authorFilterSig = sig;
+        const sel = $('authorFilter');
+        sel.replaceChildren();
+        const all = document.createElement('option');
+        all.value = 'all';
+        all.textContent = 'Все авторы';
+        sel.append(all);
+        ids.forEach(id => {
+            const o = document.createElement('option');
+            o.value = String(id);
+            o.textContent = userLabel(id);
+            sel.append(o);
+        });
+    }
+    $('authorFilter').value = authorFilter;
+}
+
+function render() {
+    const list = $('todoList');
+    list.innerHTML = '';
+    updateAuthorFilter();
+
+    const q = searchText.trim().toLowerCase();
+    const visible = todos.filter(t =>
+        (filter === 'all' || (filter === 'done' ? t.completed : !t.completed)) &&
+        (!q || t.text.toLowerCase().includes(q)) &&
+        (authorFilter === 'all' || String(t.userId) === authorFilter)
+    );
+
+    if (visible.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'empty';
+        empty.textContent = 'Задач нет';
+        list.appendChild(empty);
+    }
+    visible.forEach(todo => list.appendChild(createItem(todo)));
+
+    $('shownBadge').textContent = `${visible.length} / ${todos.length}`;
+    $('shownInfo').textContent = `Показано ${visible.length} из ${todos.length}. Нажмите на автора, чтобы открыть его профиль.`;
+
+    const done = todos.filter(t => t.completed).length;
+    $('totalCount').textContent = todos.length;
+    $('completedCount').textContent = done;
+    $('pendingCount').textContent = todos.length - done;
+
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.filter === filter);
+    });
+}
+
