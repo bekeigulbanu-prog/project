@@ -484,3 +484,16 @@ input[type="number"] {
     background: #dcfce7;
     color: #166534;
 }
+.page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.page-head h1 { margin: 0; }
+
+.modal-sm { width: min(560px, 100%); }
+.modal-sm h3 { font-size: 18px; padding-right: 40px; }
