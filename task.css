@@ -72,3 +72,65 @@ input[type="text"]:focus,
 input[type="url"]:focus {
     border-color: #2563eb;
 }
+/* Кнопки */
+.btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.btn-gold {                 /* основная кнопка */
+    background-color: #2563eb;
+    color: #ffffff;
+}
+.btn-gold:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-outline {              /* вторичная кнопка */
+    background-color: #f8fafc;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+.btn-outline:hover {
+    background-color: #e2e8f0;
+}
+
+.btn-danger {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    align-items: center;
+}
+
+.row.no-margin {
+    margin-top: 12px;
+}
+
+.row input {
+    flex: 1;
+    min-width: 160px;
+    width: auto;
+}
+
+.row select.grow {
+    flex: 1;
+    min-width: 200px;
+}
