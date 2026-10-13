@@ -657,3 +657,19 @@ async function profileRemove(item, msg) {
     render();
     refreshProfile();
 }
+
+function buildTodosUrl(sort) {
+    const params = new URLSearchParams({ limit: 30 });
+    if (sort) {
+        const [by, order] = sort.split(':');
+        params.set('sortBy', by);
+        params.set('order', order);
+    }
+    return 'https://dummyjson.com/todos?' + params;
+}
+
+function loadFiltered() {
+    const sort = $('sortSel').value;
+    $('apiUrl').value = buildTodosUrl(sort);
+    loadFromApi(Boolean(sort));
+}
