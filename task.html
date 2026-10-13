@@ -9,7 +9,10 @@
 <body>
 
     <div class="container">
-        <h1>Менеджер задач (CRUD + API)</h1>
+        <div class="page-head">
+            <h1>Менеджер задач (CRUD + API)</h1>
+            <button class="btn btn-gold" id="openAddBtn">＋ Добавить задачу</button>
+        </div>
 
         <!-- Загрузка задач по ссылке -->
         <div class="card">
@@ -31,12 +34,10 @@
 
             <div class="row">
                 <button class="btn btn-outline" onclick="usePreset('dummy')">DummyJSON</button>
-                <button class="btn btn-outline" onclick="usePreset('placeholder')">JSONPlaceholder</button>
-                <button class="btn btn-outline" onclick="usePreset('gorest')">Go REST</button>
-                <button class="btn btn-outline" onclick="addRandomTask()">Случайная задача</button>
             </div>
 
             <p id="status" class="status"></p>
+            <p id="apiLog" class="api-log"></p>
         </div>
 
         <!-- Статистика -->
@@ -48,11 +49,33 @@
 
         <!-- Список задач -->
         <div class="card">
-            <h3>Мои задачи</h3>
+            <h3>Все задачи <span class="badge" id="shownBadge">0 / 0</span></h3>
 
-            <div class="row no-margin">
-                <input type="text" id="todoInput" placeholder="Новая задача..." autocomplete="off">
-                <button class="btn btn-gold" onclick="addTodo()">Добавить</button>
+            <div class="controls">
+                <div>
+                    <label for="searchInput" class="muted">Поиск по названию</label>
+                    <input type="text" id="searchInput" placeholder="Введите название задачи" autocomplete="off">
+                </div>
+</div>
+                <div>
+                    <label for="sortSel" class="muted">Сортировка (через API)</label>
+                    <select id="sortSel">
+                        <option value="">Без сортировки</option>
+                        <option value="todo:asc">Текст: А → Я</option>
+                        <option value="todo:desc">Текст: Я → А</option>
+                        <option value="userId:asc">По пользователю</option>
+                        <option value="completed:desc">Сначала выполненные</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="authorFilter" class="muted">Автор</label>
+                    <select id="authorFilter">
+                        <option value="all">Все авторы</option>
+                    </select>
+                </div>
+                <div class="controls-btn">
+                    <button class="btn btn-outline" id="resetBtn">Сбросить</button>
+                </div>
             </div>
 
             <div class="row filters">
@@ -61,7 +84,42 @@
                 <button class="chip" data-filter="pending">Не выполненные</button>
             </div>
 
+            <p id="shownInfo" class="muted shown-info"></p>
+
             <ul id="todoList"></ul>
+        </div>
+    </div>
+
+    <!-- Окно «Новая задача» -->
+    <div class="overlay" id="addOverlay" hidden>
+        <div class="modal modal-sm" role="dialog" aria-modal="true" aria-label="Новая задача">
+            <button class="btn btn-outline btn-sm close" id="addCloseBtn" aria-label="Закрыть">✕</button>
+            <h3>Новая задача</h3>
+
+            <div class="row no-margin">
+                <input type="text" id="todoInput" placeholder="Название задачи..." autocomplete="off" aria-label="Название задачи">
+                <select id="authorSel" aria-label="Автор задачи" class="grow">
+                    <option value="1">Пользователь #1</option>
+                </select>
+            </div>
+            <div class="row">
+                <button class="btn btn-gold" onclick="addTodo()">Добавить задачу</button>
+                <label class="check" for="statusSel">Статус
+                    <select id="statusSel">
+                        <option value="pending">Не выполнено</option>
+                        <option value="done">Выполнено</option>
+                    </select>
+                </label>
+            </div>
+            <p id="addMsg" class="status error"></p>
+        </div>
+    </div>
+
+    <!-- Окно профиля пользователя -->
+    <div class="overlay" id="overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-label="Профиль пользователя">
+            <button class="btn btn-outline btn-sm close" id="closeBtn" aria-label="Закрыть">✕</button>
+            <div id="profileBody"></div>
         </div>
     </div>
 
