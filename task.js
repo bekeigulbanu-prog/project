@@ -673,3 +673,66 @@ function loadFiltered() {
     $('apiUrl').value = buildTodosUrl(sort);
     loadFromApi(Boolean(sort));
 }
+
+document.querySelectorAll('.chip').forEach(chip => {
+    chip.onclick = () => {
+        filter = chip.dataset.filter;
+        render();
+    };
+});
+
+$('searchInput').addEventListener('input', e => {
+    searchText = e.target.value;
+    render();
+});
+
+$('authorFilter').addEventListener('change', e => {
+    authorFilter = e.target.value;
+    render();
+});
+
+// Сортировка идёт запросом к API — сразу при выборе
+$('sortSel').addEventListener('change', loadFiltered);
+
+$('resetBtn').onclick = () => {
+    filter = 'all';
+    searchText = '';
+    authorFilter = 'all';
+    $('searchInput').value = '';
+    render();
+};
+
+$('todoInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTodo();
+});
+$('closeBtn').onclick = closeProfile;
+$('openAddBtn').onclick = openAdd;
+$('addCloseBtn').onclick = closeAdd;
+$('addOverlay').onclick = e => { if (e.target === $('addOverlay')) closeAdd(); };
+$('overlay').onclick = e => { if (e.target === $('overlay')) closeProfile(); };
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (!$('addOverlay').hidden) closeAdd();
+    else if (!$('overlay').hidden) closeProfile();
+});
+
+$('apiUrl').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadFromApi();
+});
+
+function init() {
+    const saved = readState();
+    if (saved) {
+        todos = Array.isArray(saved.todos) ? saved.todos : [];
+        nextId = Math.max(0, ...todos.map(t => t.id)) + 1;
+        if (saved.url) $('apiUrl').value = saved.url;
+        render();
+        setStatus(`Восстановлено задач: ${todos.length}`);
+    } else {
+        render();
+        loadFromApi(); // первый запуск: сразу загружаем задачи
+    }
+}
+
+init();
+loadUsers();
