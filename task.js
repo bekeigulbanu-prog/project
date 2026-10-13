@@ -1,20 +1,22 @@
 const PRESETS = { dummy: 'https://dummyjson.com/todos' };
 const STORAGE_KEY = 'todo-app-state';
-const CURRENT_USER_ID = 1; 
+const CURRENT_USER_ID = 1; // автор по умолчанию для новых задач
 
-let todos = [];          
-let filter = 'all';        
-let searchText = '';       
-let authorFilter = 'all';  
-let editingId = null;      
-let nextId = 1;            
+let todos = [];            // Список задач: { id, text, completed, userId, ... }
+let filter = 'all';        // all | done | pending
+let searchText = '';       // поиск по названию
+let authorFilter = 'all';  // all | id автора
+let editingId = null;      // ID задачи, которая сейчас редактируется
+let nextId = 1;            // Внутренние уникальные ID
 
-let usersMap = new Map();           
-const profileCache = new Map();     
-const deletedServerIds = new Set(); 
-const serverEdits = new Map();     
+let usersMap = new Map();           // id -> { username, firstName, lastName, image }
+const profileCache = new Map();     // id -> Promise с профилем (кэш)
+const deletedServerIds = new Set(); // удалённые у нас задачи сервера (сервер их не удаляет)
+const serverEdits = new Map();      // serverId -> { text, completed }: правки задач сервера из профиля
 
 const $ = id => document.getElementById(id);
+
+/* ============ Сохранение в браузере ============ */
 
 function readState() {
     try {
@@ -35,7 +37,7 @@ function save() {
     }
 }
 
-
+/* ============ Вспомогательное ============ */
 
 function setStatus(message, isError = false) {
     const el = $('status');
@@ -43,6 +45,7 @@ function setStatus(message, isError = false) {
     el.className = isError ? 'status error' : 'status';
 }
 
+// Показываем, какой именно запрос ушёл на API (то же видно во вкладке Network)
 function setApiLog(method, url) {
     $('apiLog').textContent = `${method} ${url}`;
 }
@@ -53,7 +56,8 @@ async function fetchJson(url, options) {
     return response.json();
 }
 
-
+// Приводим ответ разных API к единому виду:
+// DummyJSON: { todos: [{ todo, completed, userId }] }
 function normalize(data, api = null) {
     const list = Array.isArray(data) ? data : data && data.todos;
     if (!Array.isArray(list)) throw new Error('Неверный формат ответа');
@@ -61,16 +65,18 @@ function normalize(data, api = null) {
     return list
         .map(item => ({
             id: nextId++,
-            serverId: item?.id,   
-            userId: item?.userId, 
-            api,                 
+            serverId: item?.id,   // id задачи на сервере
+            userId: item?.userId, // автор задачи
+            api,                  // 'dummy' | null
             text: String(item?.todo ?? item?.title ?? '').trim(),
             completed: Boolean(item?.completed)
         }))
         .filter(task => task.text);
 }
 
+/* ============ Запросы на сервер (POST / PUT / DELETE) ============ */
 
+// Какие API умеют принимать изменения (для остальных ссылок — только локально)
 const WRITE_API = {
     dummy: {
         add: 'https://dummyjson.com/todos/add',
@@ -79,7 +85,7 @@ const WRITE_API = {
     }
 };
 
-
+// По ссылке определяем, с каким API работаем
 function detectApi(url) {
     try {
         const host = new URL(url).hostname;
@@ -88,7 +94,8 @@ function detectApi(url) {
     return null;
 }
 
-
+// Отправляет изменение на сервер.
+// Возвращает true, если задачу можно менять и на странице.
 async function syncServer(todo, method) {
     const api = WRITE_API[todo.api];
 
@@ -96,7 +103,7 @@ async function syncServer(todo, method) {
         setStatus('Этот API не принимает изменения — правка только на странице.');
         return true;
     }
-    
+    // Задачи, созданные нами, сервер не хранит (для них был бы 404)
     if (method !== 'POST' && todo.local) {
         setStatus('Эта задача создана на странице — на сервере её нет, запрос не отправлен.');
         return true;
@@ -122,7 +129,9 @@ async function syncServer(todo, method) {
     }
 }
 
+/* ============ Загрузка из API ============ */
 
+// sorted = true, когда ссылку собрали с параметрами сортировки
 async function loadFromApi(sorted = false) {
     const url = $('apiUrl').value.trim();
     if (!url.startsWith('https://')) {
@@ -152,7 +161,9 @@ function usePreset(name) {
     loadFromApi();
 }
 
+/* ============ Действия с задачами ============ */
 
+// Окно «Новая задача»
 function openAdd() {
     $('addMsg').textContent = '';
     $('addOverlay').hidden = false;
@@ -249,6 +260,9 @@ async function saveEdit(id, value) {
     save();
     render();
 }
+
+/* ============ Отрисовка ============ */
+
 function makeButton(label, className, onClick) {
     const btn = document.createElement('button');
     btn.className = className;
@@ -311,6 +325,7 @@ function userLabel(id) {
     return u ? `${u.firstName} ${u.lastName} (@${u.username})` : `Пользователь #${id}`;
 }
 
+// Список авторов для фильтра — только те, кто есть среди загруженных задач
 let authorFilterSig = '';
 function updateAuthorFilter() {
     const ids = [...new Set(todos.map(t => t.userId).filter(Boolean))].sort((a, b) => a - b);
@@ -368,6 +383,9 @@ function render() {
     });
 }
 
+/* ============ Пользователи и профиль ============ */
+
+// Заполняем выпадающий список авторов в форме добавления задачи
 function fillAuthorSelect() {
     if (!usersMap.size) return;
     const sel = $('authorSel');
@@ -599,6 +617,9 @@ function renderProfile(user, list) {
     $('profileBody').replaceChildren(wrap);
 }
 
+/* ============ Изменение и удаление задач из профиля ============ */
+
+// Перерисовываем окно профиля (данные берём из кэша)
 async function refreshProfile() {
     if (currentProfile == null) return;
     const id = currentProfile;
@@ -658,6 +679,9 @@ async function profileRemove(item, msg) {
     refreshProfile();
 }
 
+/* ============ Сортировка через API ============ */
+
+// Ссылка с параметрами сортировки: ?limit=30&sortBy=todo&order=asc
 function buildTodosUrl(sort) {
     const params = new URLSearchParams({ limit: 30 });
     if (sort) {
@@ -673,6 +697,8 @@ function loadFiltered() {
     $('apiUrl').value = buildTodosUrl(sort);
     loadFromApi(Boolean(sort));
 }
+
+/* ============ События и запуск ============ */
 
 document.querySelectorAll('.chip').forEach(chip => {
     chip.onclick = () => {
@@ -719,6 +745,23 @@ document.addEventListener('keydown', e => {
 $('apiUrl').addEventListener('keydown', e => {
     if (e.key === 'Enter') loadFromApi();
 });
+
+// «Добавить задачу» — справа от поля поиска (в карточке «Все задачи»)
+(function placeAddButton() {
+    const search = $('searchInput');
+    const addBtn = $('openAddBtn');
+    if (!search || !addBtn) return;
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;flex-wrap:nowrap;';
+    search.parentNode.insertBefore(row, search);
+    row.append(search, addBtn);
+    search.style.width = 'auto';
+    search.style.flex = '1 1 0';
+    search.style.minWidth = '0';
+    addBtn.style.flexShrink = '0';
+    addBtn.style.whiteSpace = 'nowrap';
+})();
 
 function init() {
     const saved = readState();
