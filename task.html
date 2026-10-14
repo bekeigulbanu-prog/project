@@ -11,7 +11,7 @@
     <div class="container">
         <h1>Менеджер задач (CRUD + API)</h1>
 
-        <!-- Загрузка задач по ссылке -->
+        <!-- Загрузка задач по ссылке и пресеты -->
         <div class="card">
             <div class="card-head">
                 <div>
@@ -24,12 +24,7 @@
             <label for="apiUrl" class="muted">Ссылка на API</label>
             <input type="url" id="apiUrl" value="https://dummyjson.com/todos" autocomplete="off">
 
-            <p class="muted hint">
-                Сюда нужно ввести не ключ API, а HTTPS-ссылку, которая отдаёт задачи.
-                API должен разрешать загрузку из браузера.
-            </p>
-
-            <div class="row">
+            <div class="row" style="margin-top: 12px;">
                 <button class="btn btn-outline" onclick="usePreset('dummy')">DummyJSON</button>
                 <button class="btn btn-outline" onclick="usePreset('placeholder')">JSONPlaceholder</button>
                 <button class="btn btn-outline" onclick="usePreset('gorest')">Go REST</button>
@@ -55,6 +50,18 @@
                 <button class="btn btn-gold" onclick="addTodo()">Добавить</button>
             </div>
 
+            <!-- Поиск и Сортировка через API -->
+            <div class="row search-sort-row">
+                <input type="text" id="searchInput" placeholder="Поиск по запросу..." oninput="handleSearch()">
+                <select id="sortSelect" class="btn btn-outline" onchange="handleSortApi()">
+                    <option value="default">Сортировка API...</option>
+                    <option value="todo-asc">По названию (A-Z)</option>
+                    <option value="todo-desc">По названию (Z-A)</option>
+                    <option value="completed-asc">Сначала невыполненные</option>
+                    <option value="completed-desc">Сначала выполненные</option>
+                </select>
+            </div>
+
             <div class="row filters">
                 <button class="chip" data-filter="all">Все</button>
                 <button class="chip" data-filter="done">Выполненные</button>
@@ -62,6 +69,31 @@
             </div>
 
             <ul id="todoList"></ul>
+        </div>
+    </div>
+
+    <!-- Всплывающее модальное окно с информацией о пользователе -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            
+            <div class="modal-body-flex">
+                <div class="modal-left">
+                    <img id="modalAvatar" src="" alt="Аватар" class="modal-avatar">
+                    <div id="modalNick" class="modal-nick-sub">@nick</div>
+                    <h4 id="modalName">ФИО</h4>
+                    <p class="muted"><strong>Компания:</strong> <span id="modalWork"></span></p>
+                    <p class="muted"><strong>Должность:</strong> <span id="modalRole"></span></p>
+                    <p class="muted"><strong>Город:</strong> <span id="modalCity"></span></p>
+                    <p class="muted"><strong>Email:</strong> <span id="modalEmail"></span></p>
+                    <p class="muted"><strong>Телефон:</strong> <span id="modalPhone"></span></p>
+                </div>
+
+                <div class="modal-right">
+                    <h4>Задачи пользователя:</h4>
+                    <ul id="modalTaskList" class="simple-task-list"></ul>
+                </div>
+            </div>
         </div>
     </div>
 
