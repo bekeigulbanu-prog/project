@@ -401,17 +401,14 @@ input[type="number"] {
 .profile-head {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 16px;
     margin-bottom: 16px;
 }
 
 .avatar {
-    width: 180px;
-    height: 180px;
-    max-width: 40vw;
-    max-height: 40vw;
-    object-fit: cover;
-    border-radius: 24px;
+    width: 96px;
+    height: 96px;
+    border-radius: 16px;
     background: #e2e8f0;
     flex-shrink: 0;
 }
@@ -460,13 +457,6 @@ input[type="number"] {
 
 .profile-tasks li.empty { display: block; }
 .profile-tasks .t-body { flex: 1; min-width: 0; }
-.profile-tasks li > input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    margin: 2px 0 0;
-    cursor: pointer;
-}
 .profile-tasks .t-body .check { margin-top: 8px; }
 .t-actions { display: flex; gap: 5px; flex-shrink: 0; }
 
@@ -507,6 +497,3 @@ input[type="number"] {
 
 .modal-sm { width: min(560px, 100%); }
 .modal-sm h3 { font-size: 18px; padding-right: 40px; }
-/* Поиск с кнопкой и «Сбросить» — на всю ширину сетки */
-.controls > div:first-child { grid-column: 1 / -1; }
-.controls-btn { grid-column: 1 / -1; }

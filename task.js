@@ -52,11 +52,7 @@ function setApiLog(method, url) {
 
 async function fetchJson(url, options) {
     const response = await fetch(url, options);
-    if (!response.ok) {
-        const error = new Error('HTTP ' + response.status);
-        error.status = response.status; // код ответа (например, 404)
-        throw error;
-    }
+    if (!response.ok) throw new Error('HTTP ' + response.status);
     return response.json();
 }
 
@@ -105,13 +101,11 @@ async function syncServer(todo, method) {
 
     if (!api) {
         setStatus('Этот API не принимает изменения — правка только на странице.');
-        $('apiLog').textContent = 'Запрос не отправлялся';
         return true;
     }
-    // Старые сохранённые задачи, созданные до обновления, id на сервере не имеют
-    if (method !== 'POST' && todo.serverId == null) {
-        setStatus('У этой задачи нет id на сервере — запрос не отправлен. Создайте задачу заново.');
-        $('apiLog').textContent = 'Запрос не отправлялся';
+    // Задачи, созданные нами, сервер не хранит (для них был бы 404)
+    if (method !== 'POST' && todo.local) {
+        setStatus('Эта задача создана на странице — на сервере её нет, запрос не отправлен.');
         return true;
     }
 
@@ -124,23 +118,13 @@ async function syncServer(todo, method) {
     }
 
     try {
-        const data = await fetchJson(url, options);
-        // Сервер отвечает на POST id новой задачи, но саму задачу не сохраняет.
-        // Запоминаем id, чтобы PUT и DELETE для неё тоже уходили на сервер (видно в Network).
-        if (method === 'POST' && data && data.id != null) todo.serverId = data.id;
+        await fetchJson(url, options);
         setStatus(`Запрос отправлен: ${method} ${url}`);
         setApiLog(method, url);
         return true;
     } catch (error) {
-        // Для новой задачи сервер отвечает 404: записи нет. Это ожидаемо, меняем только на странице.
-        if (todo.local && method !== 'POST' && error.status === 404) {
-            setStatus(`${method} ${url}: сервер ответил 404 — DummyJSON не хранит новые задачи, изменение применено только на странице.`);
-            setApiLog(method, `${url} → 404`);
-            return true;
-        }
         console.error('Ошибка запроса:', error);
         setStatus(`Не удалось выполнить ${method}. Изменение не применено.`, true);
-        setApiLog(method, `${url} → ошибка`);
         return false;
     }
 }
@@ -585,7 +569,6 @@ function renderProfile(user, list) {
             body.className = 't-body';
             const actions = document.createElement('div');
             actions.className = 't-actions';
-            let cb = null;   // галочка слева (только вне режима редактирования)
 
             if (keyOf(t) === editingKey) {
                 // Режим редактирования
@@ -618,28 +601,11 @@ function renderProfile(user, list) {
                     textEl('span', '', t.id ? `Задача #${t.id}` : 'Создана на странице')
                 );
                 body.append(textEl('div', 't-text' + (t.completed ? ' done' : ''), t.text), meta);
-
-                // Галочка: стоит — «Выполнено», снята — «Не выполнено»
-                cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.checked = t.completed;
-                cb.setAttribute('aria-label', 'Выполнено');
-                cb.onchange = async () => {
-                    const checked = cb.checked;
-                    const scroll = ul.scrollTop;
-                    msg.textContent = '';
-                    cb.disabled = true;
-                    const ok = await profileEdit(t, t.text, checked, msg, false);   // PUT
-                    if (ok) t.completed = checked;   // подпись и зачёркивание обновятся ниже
-                    renderTasks();                   // при ошибке галочка вернётся назад
-                    ul.scrollTop = scroll;
-                };
                 actions.append(
                     makeButton('Изменить', 'btn btn-outline btn-sm', () => { msg.textContent = ''; editingKey = keyOf(t); renderTasks(); }),
                     makeButton('Удалить', 'btn btn-danger btn-sm', () => profileRemove(t, msg))
                 );
             }
-            if (cb) li.append(cb);
             li.append(body, actions);
             ul.append(li);
         });
@@ -672,11 +638,11 @@ function findMine(item) {
     return todos.find(t => t.api === 'dummy' && !t.local && t.serverId === item.id);
 }
 
-async function profileEdit(item, value, completed, msg, refresh = true) {
+async function profileEdit(item, value, completed, msg) {
     const text = value.trim();
     if (!text) {
         msg.textContent = 'Текст задачи не может быть пустым.';
-        return false;
+        return;
     }
     const mine = findMine(item);
     const target = mine
@@ -685,7 +651,7 @@ async function profileEdit(item, value, completed, msg, refresh = true) {
 
     if (!(await syncServer(target, 'PUT'))) {   // PUT
         msg.textContent = $('status').textContent;
-        return false;
+        return;
     }
     if (mine) {
         mine.text = text;
@@ -695,8 +661,7 @@ async function profileEdit(item, value, completed, msg, refresh = true) {
     }
     save();
     render();
-    if (refresh) refreshProfile();
-    return true;
+    refreshProfile();
 }
 
 async function profileRemove(item, msg) {
