@@ -89,28 +89,32 @@
         </div>
     </div>
 
-    <!-- Окно «Новая задача» -->
+    <!-- Окно «Новая задача» / «Изменить задачу» -->
     <div class="overlay" id="addOverlay" hidden>
-        <div class="modal modal-sm" role="dialog" aria-modal="true" aria-label="Новая задача">
+        <div class="modal modal-sm" role="dialog" aria-modal="true" aria-labelledby="taskFormTitle">
             <button class="btn btn-outline btn-sm close" id="addCloseBtn" aria-label="Закрыть">✕</button>
-            <h3>Новая задача</h3>
+            <h3 id="taskFormTitle">Новая задача</h3>
 
-            <div class="row no-margin">
-                <input type="text" id="todoInput" placeholder="Название задачи..." autocomplete="off" aria-label="Название задачи">
-                <select id="authorSel" aria-label="Автор задачи" class="grow">
-                    <option value="1">Пользователь #1</option>
-                </select>
-            </div>
-            <div class="row">
-                <button class="btn btn-gold" onclick="addTodo()">Добавить задачу</button>
-                <label class="check" for="statusSel">Статус
-                    <select id="statusSel">
-                        <option value="pending">Не выполнено</option>
-                        <option value="done">Выполнено</option>
-                    </select>
-                </label>
-            </div>
+            <label class="field" for="todoInput">Текст задачи</label>
+            <textarea id="todoInput" rows="4" placeholder="Что нужно сделать?"></textarea>
+
+            <label class="field" for="authorSel">Автор</label>
+            <select id="authorSel">
+                <option value="1">Пользователь #1</option>
+            </select>
+
+            <label class="field" for="statusSel">Статус</label>
+            <select id="statusSel">
+                <option value="pending">Не выполнено</option>
+                <option value="done">Выполнено</option>
+            </select>
+
             <p id="addMsg" class="status error"></p>
+
+            <div class="form-actions">
+                <button class="btn btn-gold" id="taskSubmitBtn">Добавить</button>
+                <button class="btn btn-outline" id="taskCancelBtn">Отмена</button>
+            </div>
         </div>
     </div>
 

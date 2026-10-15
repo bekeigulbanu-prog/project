@@ -506,7 +506,53 @@ input[type="number"] {
 .page-head h1 { margin: 0; }
 
 .modal-sm { width: min(560px, 100%); }
-.modal-sm h3 { font-size: 18px; padding-right: 40px; }
+.modal-sm h3 { font-size: 22px; margin-bottom: 4px; padding-right: 40px; }
 /* Поиск с кнопкой и «Сбросить» — на всю ширину сетки */
 .controls > div:first-child { grid-column: 1 / -1; }
 .controls-btn { grid-column: 1 / -1; }
+
+/* Окно «Новая задача» / «Изменить задачу» — поверх окна профиля */
+#addOverlay { z-index: 20; }
+
+.field {
+    display: block;
+    margin: 16px 0 6px;
+    font-size: 14px;
+    color: #334155;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+}
+
+textarea:focus { border-color: #2563eb; }
+
+.modal-sm select { width: 100%; }
+
+#addMsg { margin-top: 12px; }
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* Заголовок блока задач в профиле + кнопка «Добавить задачу» */
+.side-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.side-head h3 { margin: 0; }

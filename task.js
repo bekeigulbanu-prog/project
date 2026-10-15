@@ -6,13 +6,13 @@ let todos = [];            // Список задач: { id, text, completed, us
 let filter = 'all';        // all | done | pending
 let searchText = '';       // поиск по названию
 let authorFilter = 'all';  // all | id автора
-let editingId = null;      // ID задачи, которая сейчас редактируется
+let taskForm = { mode: 'add', task: null, trigger: null }; // состояние окна «Новая задача / Изменить задачу»
 let nextId = 1;            // Внутренние уникальные ID
 
 let usersMap = new Map();           // id -> { username, firstName, lastName, image }
 const profileCache = new Map();     // id -> Promise с профилем (кэш)
 const deletedServerIds = new Set(); // удалённые у нас задачи сервера (сервер их не удаляет)
-const serverEdits = new Map();      // serverId -> { text, completed }: правки задач сервера из профиля
+const serverEdits = new Map();      // serverId -> { text, completed, userId }: наши правки задач сервера
 
 const $ = id => document.getElementById(id);
 
@@ -67,15 +67,19 @@ function normalize(data, api = null) {
     if (!Array.isArray(list)) throw new Error('Неверный формат ответа');
 
     return list
-        .map(item => ({
-            id: nextId++,
-            serverId: item?.id,   // id задачи на сервере
-            userId: item?.userId, // автор задачи
-            api,                  // 'dummy' | null
-            text: String(item?.todo ?? item?.title ?? '').trim(),
-            completed: Boolean(item?.completed)
-        }))
-        .filter(task => task.text);
+        .map(item => {
+            // DummyJSON не сохраняет изменения, поэтому накладываем свои правки
+            const edit = api === 'dummy' ? serverEdits.get(item?.id) : null;
+            return {
+                id: nextId++,
+                serverId: item?.id,                       // id задачи на сервере
+                userId: edit ? edit.userId : item?.userId, // автор задачи
+                api,                                      // 'dummy' | null
+                text: String(edit ? edit.text : (item?.todo ?? item?.title ?? '')).trim(),
+                completed: Boolean(edit ? edit.completed : item?.completed)
+            };
+        })
+        .filter(task => task.text && !(task.api === 'dummy' && deletedServerIds.has(task.serverId)));
 }
 
 /* ============ Запросы на сервер (POST / PUT / DELETE) ============ */
@@ -85,7 +89,7 @@ const WRITE_API = {
     dummy: {
         add: 'https://dummyjson.com/todos/add',
         item: id => `https://dummyjson.com/todos/${id}`,
-        body: t => ({ todo: t.text, completed: t.completed })
+        body: t => ({ todo: t.text, completed: t.completed, ...(t.userId ? { userId: t.userId } : {}) })
     }
 };
 
@@ -160,7 +164,6 @@ async function loadFromApi(sorted = false) {
     setApiLog('GET', url);
     try {
         todos = normalize(await fetchJson(url), detectApi(url));
-        editingId = null;
         save();
         render();
         setStatus(sorted === true
@@ -179,50 +182,119 @@ function usePreset(name) {
 
 /* ============ Действия с задачами ============ */
 
-// Окно «Новая задача»
-function openAdd() {
+// Окно задачи: одно и то же для «Новая задача» и «Изменить задачу»
+function openTaskForm({ mode = 'add', task = null, userId = CURRENT_USER_ID, trigger = null } = {}) {
+    taskForm = { mode, task, trigger: trigger || document.activeElement };
+    const isEdit = mode === 'edit';
+
+    $('taskFormTitle').textContent = isEdit ? 'Изменить задачу' : 'Новая задача';
+    $('taskSubmitBtn').textContent = isEdit ? 'Сохранить' : 'Добавить';
+    $('todoInput').value = isEdit ? task.text : '';
+    $('statusSel').value = isEdit && task.completed ? 'done' : 'pending';
     $('addMsg').textContent = '';
+
+    // Автор: если такого id ещё нет в списке (пользователи не успели загрузиться) — добавляем
+    const authorId = String((isEdit ? task.userId : userId) || CURRENT_USER_ID);
+    const sel = $('authorSel');
+    if (![...sel.options].some(o => o.value === authorId)) {
+        const o = document.createElement('option');
+        o.value = authorId;
+        o.textContent = userLabel(Number(authorId));
+        sel.append(o);
+    }
+    sel.value = authorId;
+
     $('addOverlay').hidden = false;
     $('todoInput').focus();
 }
 
-function closeAdd() {
+function closeTaskForm() {
     $('addOverlay').hidden = true;
-    $('openAddBtn').focus();
+    const trigger = taskForm.trigger;
+    if (trigger && trigger.isConnected) trigger.focus();
 }
 
 function showAddMessage(message) {
     $('addMsg').textContent = message;
 }
 
-async function addTodo() {
-    const input = $('todoInput');
-    const text = input.value.trim();
+async function submitTaskForm() {
+    const text = $('todoInput').value.trim();
     if (!text) {
         showAddMessage('Введите текст задачи.');
         return;
     }
+    // Текст, автор и статус берутся из формы
+    const data = {
+        text,
+        userId: Number($('authorSel').value) || CURRENT_USER_ID,
+        completed: $('statusSel').value === 'done'
+    };
 
-    // Автор и статус берутся из формы
-    const userId = Number($('authorSel').value) || CURRENT_USER_ID;
-    const todo = { id: nextId++, text, completed: $('statusSel').value === 'done', userId };
+    $('taskSubmitBtn').disabled = true;
+    const ok = taskForm.mode === 'edit'
+        ? await updateTask(taskForm.task, data)   // PUT
+        : await createTask(data);                 // POST
+    $('taskSubmitBtn').disabled = false;
+
+    if (!ok) {
+        showAddMessage($('status').textContent);
+        return;
+    }
+    closeTaskForm();
+    refreshProfile(); // если открыт профиль — обновим и его
+}
+
+async function createTask({ text, userId, completed }) {
+    const todo = { id: nextId++, text, completed, userId };
     const api = detectApi($('apiUrl').value);
     if (api) {
         todo.api = api;
         todo.local = true; // сервер новую задачу не сохраняет
     }
 
-    if (!(await syncServer(todo, 'POST'))) {   // POST
-        showAddMessage($('status').textContent);
-        return;
-    }
+    if (!(await syncServer(todo, 'POST'))) return false;   // POST
 
     todos.unshift(todo);
-    input.value = '';
-    $('statusSel').value = 'pending';
     save();
     render();
-    closeAdd();
+    return true;
+}
+
+// Задача сервера, которую мы изменили: запоминаем, чтобы правка не пропала при перезагрузке списка
+function rememberEdit(todo) {
+    if (todo.api === 'dummy' && !todo.local && todo.serverId != null) {
+        serverEdits.set(todo.serverId, { text: todo.text, completed: todo.completed, userId: todo.userId });
+    }
+}
+
+// Находит задачу в общем списке (task — описание из списка или из профиля)
+function findTodo(task) {
+    if (task.todoId) return todos.find(t => t.id === task.todoId);
+    if (task.serverId != null) return todos.find(t => t.api === 'dummy' && !t.local && t.serverId === task.serverId);
+    return null;
+}
+
+// Меняет задачу (текст / автор / статус): PUT на сервер и правка на странице.
+// task: { todoId, serverId, text, completed, userId }. Возвращает true, если получилось.
+async function updateTask(task, changes) {
+    const mine = findTodo(task);
+    const base = { text: task.text, completed: task.completed, userId: task.userId };
+    const target = mine
+        ? { ...mine, ...changes }
+        : { api: 'dummy', serverId: task.serverId, ...base, ...changes };
+
+    if (!(await syncServer(target, 'PUT'))) return false;   // PUT
+
+    if (mine) {
+        Object.assign(mine, changes);
+        rememberEdit(mine);
+    } else if (task.serverId != null) {
+        serverEdits.set(task.serverId, { ...base, ...changes });
+    }
+    save();
+    render();
+    return true;
 }
 
 async function toggleTodo(id) {
@@ -232,6 +304,7 @@ async function toggleTodo(id) {
     const changed = { ...todo, completed: !todo.completed };
     if (await syncServer(changed, 'PUT')) {   // PUT
         todo.completed = changed.completed;
+        rememberEdit(todo);
     }
     save();
     render(); // при ошибке чекбокс вернётся в прежнее состояние
@@ -245,34 +318,6 @@ async function removeTodo(id) {
     if (todo.api === 'dummy' && !todo.local) deletedServerIds.add(todo.serverId);
 
     todos = todos.filter(t => t.id !== id);
-    save();
-    render();
-}
-
-function startEdit(id) {
-    editingId = id;
-    render();
-}
-
-function cancelEdit() {
-    editingId = null;
-    render();
-}
-
-async function saveEdit(id, value) {
-    const text = value.trim();
-    if (!text) {
-        setStatus('Текст задачи не может быть пустым.', true);
-        return;
-    }
-    const todo = todos.find(t => t.id === id);
-    if (!todo) return;
-
-    const changed = { ...todo, text };
-    if (!(await syncServer(changed, 'PUT'))) return; // PUT
-
-    todo.text = text;
-    editingId = null;
     save();
     render();
 }
@@ -296,43 +341,29 @@ function createItem(todo) {
     checkbox.checked = todo.completed;
     checkbox.onchange = () => toggleTodo(todo.id);
 
+    // textContent, а не innerHTML — защита от вставки HTML в текст задачи
+    const text = document.createElement('span');
+    text.className = 'text';
+    text.textContent = todo.text;
+
     const actions = document.createElement('div');
     actions.className = 'actions';
+    actions.append(
+        makeButton('Изменить', 'btn btn-outline btn-sm', e => openTaskForm({
+            mode: 'edit',
+            task: { todoId: todo.id, serverId: todo.serverId, text: todo.text, completed: todo.completed, userId: todo.userId },
+            trigger: e.currentTarget
+        })),
+        makeButton('Удалить', 'btn btn-danger btn-sm', () => removeTodo(todo.id))
+    );
 
-    if (todo.id === editingId) {
-        const field = document.createElement('input');
-        field.type = 'text';
-        field.className = 'edit-field';
-        field.value = todo.text;
-        field.onkeydown = e => {
-            if (e.key === 'Enter') saveEdit(todo.id, field.value);
-            if (e.key === 'Escape') cancelEdit();
-        };
+    const body = document.createElement('div');
+    body.className = 'body';
+    body.append(text);
+    const nick = makeAuthor(todo);
+    if (nick) body.append(nick);   // автор — под текстом задачи
 
-        actions.append(
-            makeButton('Сохранить', 'btn btn-gold btn-sm', () => saveEdit(todo.id, field.value)),
-            makeButton('Отмена', 'btn btn-outline btn-sm', cancelEdit)
-        );
-        li.append(checkbox, field, actions);
-        setTimeout(() => { field.focus(); field.select(); }, 0);
-    } else {
-        // textContent, а не innerHTML — защита от вставки HTML в текст задачи
-        const text = document.createElement('span');
-        text.className = 'text';
-        text.textContent = todo.text;
-
-        actions.append(
-            makeButton('Изменить', 'btn btn-outline btn-sm', () => startEdit(todo.id)),
-            makeButton('Удалить', 'btn btn-danger btn-sm', () => removeTodo(todo.id))
-        );
-        const body = document.createElement('div');
-        body.className = 'body';
-        body.append(text);
-        const nick = makeAuthor(todo);
-        if (nick) body.append(nick);   // автор — под текстом задачи
-
-        li.append(checkbox, body, actions);
-    }
+    li.append(checkbox, body, actions);
     return li;
 }
 
@@ -468,17 +499,36 @@ function makeAuthor(todo) {
 
 // Задачи пользователя с сервера + наши локальные изменения
 function profileTodos(userId, serverList) {
-    const fromServer = serverList
-        .filter(t => !deletedServerIds.has(t.id))
-        .map(t => {
-            const mine = todos.find(x => x.api === 'dummy' && !x.local && x.serverId === t.id);
-            const src = mine || serverEdits.get(t.id) || { text: t.todo, completed: t.completed };
-            return { id: t.id, localId: null, text: src.text, completed: src.completed };
-        });
+    const seen = new Set();
+    const result = [];
+
+    serverList.forEach(t => {
+        seen.add(t.id);
+        if (deletedServerIds.has(t.id)) return;
+        const mine = todos.find(x => x.api === 'dummy' && !x.local && x.serverId === t.id);
+        const src = mine || serverEdits.get(t.id) || { text: t.todo, completed: t.completed, userId: t.userId };
+        if ((src.userId ?? t.userId) !== userId) return;   // задачу передали другому автору
+        result.push({ id: t.id, localId: null, text: src.text, completed: src.completed });
+    });
+
+    // Задачи, которые этому пользователю передали (сменили автора)
+    todos.forEach(x => {
+        if (x.api === 'dummy' && !x.local && x.userId === userId && !seen.has(x.serverId) && !deletedServerIds.has(x.serverId)) {
+            seen.add(x.serverId);
+            result.push({ id: x.serverId, localId: null, text: x.text, completed: x.completed });
+        }
+    });
+    serverEdits.forEach((e, id) => {
+        if (e.userId === userId && !seen.has(id) && !deletedServerIds.has(id)) {
+            seen.add(id);
+            result.push({ id, localId: null, text: e.text, completed: e.completed });
+        }
+    });
+
     const created = todos
         .filter(x => x.local && x.userId === userId)
         .map(x => ({ id: null, localId: x.id, text: x.text, completed: x.completed }));
-    return [...created, ...fromServer];
+    return [...created, ...result];
 }
 
 let currentProfile = null;
@@ -570,83 +620,70 @@ function renderProfile(user, list) {
     const side = document.createElement('div');
     side.className = 'profile-side';
 
+    const sideHead = document.createElement('div');
+    sideHead.className = 'side-head';
+    sideHead.append(
+        textEl('h3', '', 'Задачи пользователя'),
+        makeButton('＋ Добавить задачу', 'btn btn-gold btn-sm',
+            e => openTaskForm({ userId: user.id, trigger: e.currentTarget }))   // автор — этот пользователь
+    );
+
     const msg = textEl('p', 'status error', '');
     const ul = document.createElement('ul');
     ul.className = 'profile-tasks';
-    let editingKey = null;
-    const keyOf = t => (t.localId ? 'l' + t.localId : 's' + t.id);
+
+    // Описание задачи для запросов и окна «Изменить задачу»
+    const taskOf = t => ({ todoId: t.localId, serverId: t.id, text: t.text, completed: t.completed, userId: user.id });
 
     const renderTasks = () => {
         ul.replaceChildren();
         if (!list.length) ul.append(textEl('li', 'empty', 'Задач нет.'));
         list.forEach(t => {
             const li = document.createElement('li');
+
+            // Галочка: стоит — «Выполнено», снята — «Не выполнено»
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = t.completed;
+            cb.setAttribute('aria-label', 'Выполнено');
+            cb.onchange = async () => {
+                const checked = cb.checked;
+                const scroll = ul.scrollTop;
+                msg.textContent = '';
+                cb.disabled = true;
+                if (await updateTask(taskOf(t), { completed: checked })) t.completed = checked;   // PUT
+                else msg.textContent = $('status').textContent;
+                renderTasks();   // подпись и зачёркивание обновятся; при ошибке галочка вернётся назад
+                ul.scrollTop = scroll;
+            };
+
+            const meta = document.createElement('div');
+            meta.className = 't-meta';
+            meta.append(
+                textEl('span', t.completed ? 'state ok' : 'state', t.completed ? 'Выполнено' : 'Не выполнено'),
+                textEl('span', '', t.id ? `Задача #${t.id}` : 'Создана на странице')
+            );
             const body = document.createElement('div');
             body.className = 't-body';
+            body.append(textEl('div', 't-text' + (t.completed ? ' done' : ''), t.text), meta);
+
             const actions = document.createElement('div');
             actions.className = 't-actions';
-            let cb = null;   // галочка слева (только вне режима редактирования)
-
-            if (keyOf(t) === editingKey) {
-                // Режим редактирования
-                const field = document.createElement('input');
-                field.type = 'text';
-                field.value = t.text;
-                const label = document.createElement('label');
-                label.className = 'check';
-                const cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.checked = t.completed;
-                label.append(cb, ' Выполнено');
-
-                const submit = () => profileEdit(t, field.value, cb.checked, msg);
-                field.onkeydown = e => {
-                    if (e.key === 'Enter') submit();
-                    if (e.key === 'Escape') { e.stopPropagation(); editingKey = null; renderTasks(); }
-                };
-                body.append(field, label);
-                actions.append(
-                    makeButton('Сохранить', 'btn btn-gold btn-sm', submit),
-                    makeButton('Отмена', 'btn btn-outline btn-sm', () => { editingKey = null; renderTasks(); })
-                );
-                setTimeout(() => { field.focus(); field.select(); }, 0);
-            } else {
-                const meta = document.createElement('div');
-                meta.className = 't-meta';
-                meta.append(
-                    textEl('span', t.completed ? 'state ok' : 'state', t.completed ? 'Выполнено' : 'Не выполнено'),
-                    textEl('span', '', t.id ? `Задача #${t.id}` : 'Создана на странице')
-                );
-                body.append(textEl('div', 't-text' + (t.completed ? ' done' : ''), t.text), meta);
-
-                // Галочка: стоит — «Выполнено», снята — «Не выполнено»
-                cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.checked = t.completed;
-                cb.setAttribute('aria-label', 'Выполнено');
-                cb.onchange = async () => {
-                    const checked = cb.checked;
-                    const scroll = ul.scrollTop;
+            actions.append(
+                makeButton('Изменить', 'btn btn-outline btn-sm', e => {
                     msg.textContent = '';
-                    cb.disabled = true;
-                    const ok = await profileEdit(t, t.text, checked, msg, false);   // PUT
-                    if (ok) t.completed = checked;   // подпись и зачёркивание обновятся ниже
-                    renderTasks();                   // при ошибке галочка вернётся назад
-                    ul.scrollTop = scroll;
-                };
-                actions.append(
-                    makeButton('Изменить', 'btn btn-outline btn-sm', () => { msg.textContent = ''; editingKey = keyOf(t); renderTasks(); }),
-                    makeButton('Удалить', 'btn btn-danger btn-sm', () => profileRemove(t, msg))
-                );
-            }
-            if (cb) li.append(cb);
-            li.append(body, actions);
+                    openTaskForm({ mode: 'edit', task: taskOf(t), trigger: e.currentTarget });
+                }),
+                makeButton('Удалить', 'btn btn-danger btn-sm', () => profileRemove(t, msg))
+            );
+
+            li.append(cb, body, actions);
             ul.append(li);
         });
     };
     renderTasks();
 
-    side.append(msg, ul);
+    side.append(sideHead, msg, ul);
     wrap.append(info, side);
     $('profileBody').replaceChildren(wrap);
 }
@@ -670,33 +707,6 @@ async function refreshProfile() {
 function findMine(item) {
     if (item.localId) return todos.find(t => t.id === item.localId);
     return todos.find(t => t.api === 'dummy' && !t.local && t.serverId === item.id);
-}
-
-async function profileEdit(item, value, completed, msg, refresh = true) {
-    const text = value.trim();
-    if (!text) {
-        msg.textContent = 'Текст задачи не может быть пустым.';
-        return false;
-    }
-    const mine = findMine(item);
-    const target = mine
-        ? { ...mine, text, completed }
-        : { api: 'dummy', serverId: item.id, userId: currentProfile, text, completed };
-
-    if (!(await syncServer(target, 'PUT'))) {   // PUT
-        msg.textContent = $('status').textContent;
-        return false;
-    }
-    if (mine) {
-        mine.text = text;
-        mine.completed = completed;
-    } else {
-        serverEdits.set(item.id, { text, completed });
-    }
-    save();
-    render();
-    if (refresh) refreshProfile();
-    return true;
 }
 
 async function profileRemove(item, msg) {
@@ -763,17 +773,26 @@ $('resetBtn').onclick = () => {
     render();
 };
 
+// Enter отправляет форму, Shift+Enter — новая строка
 $('todoInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addTodo();
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitTaskForm();
+    }
 });
 $('closeBtn').onclick = closeProfile;
-$('openAddBtn').onclick = openAdd;
-$('addCloseBtn').onclick = closeAdd;
-$('addOverlay').onclick = e => { if (e.target === $('addOverlay')) closeAdd(); };
+$('openAddBtn').onclick = e => openTaskForm({
+    userId: Number($('authorSel').value) || CURRENT_USER_ID,
+    trigger: e.currentTarget
+});
+$('addCloseBtn').onclick = closeTaskForm;
+$('taskCancelBtn').onclick = closeTaskForm;
+$('taskSubmitBtn').onclick = submitTaskForm;
+$('addOverlay').onclick = e => { if (e.target === $('addOverlay')) closeTaskForm(); };
 $('overlay').onclick = e => { if (e.target === $('overlay')) closeProfile(); };
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
-    if (!$('addOverlay').hidden) closeAdd();
+    if (!$('addOverlay').hidden) closeTaskForm();
     else if (!$('overlay').hidden) closeProfile();
 });
 
