@@ -556,3 +556,37 @@ textarea:focus { border-color: #2563eb; }
 }
 
 .side-head h3 { margin: 0; }
+
+/* Сортировка и фильтр в профиле */
+.profile-controls {
+    display: grid;
+    gap: 8px;
+    margin: 4px 0 8px;
+}
+
+.profile-controls label.muted { margin-bottom: 0; font-size: 13px; }
+.profile-controls select { width: 100%; margin: 0; }
+
+.profile-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.status-chip {
+    padding: 5px 12px;
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.status-chip.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+.profile-side > .muted { margin: 0 0 8px; font-size: 13px; }

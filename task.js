@@ -473,6 +473,46 @@ function getProfile(id) {
     return profileCache.get(id);
 }
 
+// Что выбрано в окне профиля: сортировка (через API) и фильтр по статусу
+let profileView = { sort: '', status: 'all' };
+const sortedCache = new Map();   // "id|sortBy:order" -> Promise со списком задач (кэш)
+
+// Задачи пользователя, отсортированные сервером: /todos/user/5?sortBy=todo&order=asc
+function fetchUserTodos(id, sort) {
+    const key = `${id}|${sort}`;
+    if (!sortedCache.has(key)) {
+        const [by, order] = sort.split(':');
+        const url = `https://dummyjson.com/todos/user/${id}?sortBy=${by}&order=${order}`;
+        setApiLog('GET', url);
+        sortedCache.set(key, fetchJson(url)
+            .then(data => data.todos)
+            .catch(error => { sortedCache.delete(key); throw error; }));
+    }
+    return sortedCache.get(key);
+}
+
+// Список задач с сервера для открытого профиля (с сортировкой или без)
+async function profileServerTodos(id) {
+    if (!profileView.sort) return (await getProfile(id)).todos;
+    return fetchUserTodos(id, profileView.sort);
+}
+
+// В DummyJSON нет фильтра задач по статусу, поэтому «выполнено / не выполнено» отбираем на странице.
+// Сортировку тоже дублируем на странице: так в порядок попадают и задачи, созданные у нас.
+const PROFILE_SORT = {
+    'todo:asc': (a, b) => a.text.localeCompare(b.text),
+    'todo:desc': (a, b) => b.text.localeCompare(a.text),
+    'completed:desc': (a, b) => Number(b.completed) - Number(a.completed),
+    'completed:asc': (a, b) => Number(a.completed) - Number(b.completed)
+};
+
+function viewProfileTasks(list) {
+    const shown = list.filter(t =>
+        profileView.status === 'all' || (profileView.status === 'done' ? t.completed : !t.completed));
+    const cmp = PROFILE_SORT[profileView.sort];
+    return cmp ? [...shown].sort(cmp) : shown;
+}
+
 // Автор показывается под задачей у любой задачи, у которой есть userId
 function makeAuthor(todo) {
     if (!todo.userId) return null;
@@ -536,13 +576,15 @@ let lastFocus = null;
 
 async function openProfile(userId, trigger) {
     currentProfile = userId;
+    profileView = { sort: '', status: 'all' };   // каждый раз открываем без сортировки и фильтра
     lastFocus = trigger;
     $('overlay').hidden = false;
     $('profileBody').textContent = 'Загрузка...';
     $('closeBtn').focus();
 
     try {
-        const { user, todos: serverList } = await getProfile(userId);
+        const { user } = await getProfile(userId);
+        const serverList = await profileServerTodos(userId);
         if (currentProfile !== userId) return; // окно уже закрыли
         renderProfile(user, profileTodos(userId, serverList));
     } catch (error) {
@@ -566,7 +608,8 @@ function textEl(tag, className, text) {
 
 const GENDERS = { male: 'Мужской', female: 'Женский' };
 
-function renderProfile(user, list) {
+function renderProfile(user, initialList) {
+    let list = initialList;   // меняется, когда запрашиваем другую сортировку
     const a = user.address || {};
     const c = user.company || {};
     const hair = user.hair ? [user.hair.color, user.hair.type].filter(Boolean).join(', ') : '';
@@ -628,6 +671,43 @@ function renderProfile(user, list) {
             e => openTaskForm({ userId: user.id, trigger: e.currentTarget }))   // автор — этот пользователь
     );
 
+    // Сортировка (запросом к API) и фильтр «выполнено / не выполнено»
+    const controls = document.createElement('div');
+    controls.className = 'profile-controls';
+
+    const sortLabel = textEl('label', 'muted', 'Сортировка (через API)');
+    sortLabel.htmlFor = 'profileSort';
+    const sortSel = document.createElement('select');
+    sortSel.id = 'profileSort';
+    [
+        ['', 'Без сортировки'],
+        ['todo:asc', 'По тексту: А → Я'],
+        ['todo:desc', 'По тексту: Я → А'],
+        ['completed:desc', 'Сначала выполненные'],
+        ['completed:asc', 'Сначала невыполненные']
+    ].forEach(([value, label]) => {
+        const o = document.createElement('option');
+        o.value = value;
+        o.textContent = label;
+        sortSel.append(o);
+    });
+    sortSel.value = profileView.sort;
+
+    const chips = document.createElement('div');
+    chips.className = 'profile-chips';
+    const chipEls = [['all', 'Все'], ['done', 'Выполненные'], ['pending', 'Не выполненные']].map(([value, label]) => {
+        const chip = makeButton(label, 'status-chip', () => {
+            profileView.status = value;
+            chipEls.forEach(c => c.classList.toggle('active', c === chip));
+            renderTasks();
+        });
+        chip.classList.toggle('active', value === profileView.status);
+        return chip;
+    });
+    chips.append(...chipEls);
+    controls.append(sortLabel, sortSel, chips);
+
+    const count = textEl('p', 'muted', '');
     const msg = textEl('p', 'status error', '');
     const ul = document.createElement('ul');
     ul.className = 'profile-tasks';
@@ -637,8 +717,10 @@ function renderProfile(user, list) {
 
     const renderTasks = () => {
         ul.replaceChildren();
-        if (!list.length) ul.append(textEl('li', 'empty', 'Задач нет.'));
-        list.forEach(t => {
+        const shown = viewProfileTasks(list);
+        count.textContent = `Показано ${shown.length} из ${list.length}`;
+        if (!shown.length) ul.append(textEl('li', 'empty', list.length ? 'Нет задач с таким статусом.' : 'Задач нет.'));
+        shown.forEach(t => {
             const li = document.createElement('li');
 
             // Галочка: стоит — «Выполнено», снята — «Не выполнено»
@@ -683,7 +765,25 @@ function renderProfile(user, list) {
     };
     renderTasks();
 
-    side.append(sideHead, msg, ul);
+    // Выбрали сортировку — отправляем новый запрос к API
+    sortSel.onchange = async () => {
+        const previous = profileView.sort;
+        profileView.sort = sortSel.value;
+        msg.textContent = '';
+        sortSel.disabled = true;
+        try {
+            list = profileTodos(user.id, await profileServerTodos(user.id));   // GET с sortBy и order
+            renderTasks();
+        } catch (error) {
+            console.error('Ошибка сортировки:', error);
+            profileView.sort = previous;
+            sortSel.value = previous;
+            msg.textContent = 'Не удалось получить отсортированные задачи.';
+        }
+        sortSel.disabled = false;
+    };
+
+    side.append(sideHead, controls, count, msg, ul);
     wrap.append(info, side);
     $('profileBody').replaceChildren(wrap);
 }
@@ -695,7 +795,8 @@ async function refreshProfile() {
     if (currentProfile == null) return;
     const id = currentProfile;
     try {
-        const { user, todos: serverList } = await getProfile(id);
+        const { user } = await getProfile(id);
+        const serverList = await profileServerTodos(id);
         if (currentProfile !== id) return;
         renderProfile(user, profileTodos(id, serverList));
     } catch (error) {
